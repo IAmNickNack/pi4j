@@ -41,7 +41,7 @@ public class DefaultContext implements Context {
 
     private final ExecutorPool executorPool = new ExecutorPool();
     private final ExecutorService runtimeExecutor = this.executorPool.getExecutor("Pi4J.RUNTIME");
-    private final MutableRegistry mutableRegistry = new MutableRegistry(this);
+    private final DefaultMutableRegistry mutableRegistry = new DefaultMutableRegistry(this);
 
     private volatile boolean isShutdown = false;
 

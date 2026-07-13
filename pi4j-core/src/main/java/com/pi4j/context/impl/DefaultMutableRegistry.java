@@ -6,7 +6,7 @@ import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
-import com.pi4j.registry.Registry;
+import com.pi4j.registry.MutableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,20 +18,21 @@ import java.util.Set;
 /**
  * A mutable implementation of the Registry interface, managed by the Runtime.
  */
-public class MutableRegistry implements Registry {
+public class DefaultMutableRegistry implements MutableRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(MutableRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultMutableRegistry.class);
     private final Map<String, IO> instances;
     private final Map<IOType, Set<Integer>> usedAddressesByIoType;
     private final Context context;
 
-    MutableRegistry(Context context) {
+    DefaultMutableRegistry(Context context) {
         this.context = context;
         this.instances = new HashMap<>();
         this.usedAddressesByIoType = new HashMap<>();
     }
 
-    synchronized void register(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
+    @Override
+    public synchronized void register(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
 
         // Validate target I/O instance id
         String id = validateId(instance.id());
@@ -56,6 +57,11 @@ public class MutableRegistry implements Registry {
             removeFromMap(instance);
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
         }
+    }
+
+    @Override
+    public void unregister(String id) throws IOInvalidIDException {
+        shutdown(id);
     }
 
     @Override
