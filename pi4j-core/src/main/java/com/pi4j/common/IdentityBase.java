@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Convenient base class for {@link Extension} implementations that provides default {@link Identity}-style
- * storage for id, name, description, and {@link Metadata}. Subclasses inherit sensible defaults derived from
+ * storage for id, name, and description. Subclasses inherit sensible defaults derived from
  * the concrete class name and may override them via the constructors.
  *
  * @param <T> the self-type returned by the {@link Extension} lifecycle, enabling fluent subclass APIs
@@ -22,8 +22,6 @@ public abstract class IdentityBase<T> implements Extension<T> {
     protected String name;
     /** The description; defaults to the concrete class's fully qualified name. */
     protected String description;
-    /** The metadata collection for arbitrary key/value attributes. */
-    protected Metadata metadata = Metadata.create();
 
     /**
      * Creates an instance whose id and description default to the concrete class's fully qualified name and
@@ -81,10 +79,5 @@ public abstract class IdentityBase<T> implements Extension<T> {
     @Override
     public String description() {
         return this.description;
-    }
-
-    @Override
-    public Metadata metadata() {
-        return this.metadata;
     }
 }
