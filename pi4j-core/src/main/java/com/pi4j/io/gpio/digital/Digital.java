@@ -14,7 +14,7 @@ import com.pi4j.io.gpio.Gpio;
  * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
 public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-    CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
+    CONFIG_TYPE extends DigitalConfig,
     PROVIDER_TYPE extends DigitalProvider>
     extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
     ListenableOnOffRead<DIGITAL_TYPE> {

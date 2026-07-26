@@ -10,7 +10,7 @@ import com.pi4j.util.StringUtil;
 import java.util.Map;
 
 public class DefaultI2CConfig
-    extends IOConfigBase<I2CConfig>
+    extends IOConfigBase
     implements I2CConfig {
 
     // private configuration properties

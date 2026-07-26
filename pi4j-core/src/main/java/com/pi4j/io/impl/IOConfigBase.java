@@ -1,15 +1,13 @@
 package com.pi4j.io.impl;
 
-import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
 import com.pi4j.io.IOConfig;
 
 import java.util.Map;
 
 /**
- * @param <CONFIG_TYPE>
  */
-public abstract class IOConfigBase<CONFIG_TYPE extends Config> extends ConfigBase<CONFIG_TYPE> implements IOConfig<CONFIG_TYPE> {
+public abstract class IOConfigBase extends ConfigBase implements IOConfig {
 
     // private configuration variables
     protected String provider = null;

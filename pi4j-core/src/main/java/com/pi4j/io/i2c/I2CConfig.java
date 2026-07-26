@@ -10,7 +10,7 @@ import com.pi4j.io.IOConfig;
  * desired {@link I2CImplementation}. Instances are produced by an {@link I2CConfigBuilder} and consumed by an
  * {@link I2CProvider} when creating a device.
  */
-public interface I2CConfig extends IOConfig<I2CConfig>, BusConfig<I2CConfig>, DeviceConfig<I2CConfig> {
+public interface I2CConfig extends IOConfig, BusConfig, DeviceConfig {
 
     /** Configuration property key identifying the selected {@link I2CImplementation}. */
     String I2C_IMPLEMENTATION = "i2c_implementation";

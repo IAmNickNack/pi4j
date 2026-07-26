@@ -9,7 +9,7 @@ import com.pi4j.io.IOConfig;
  * mode, baud rate, bit ordering, and provider flags. Instances are produced by a {@link SpiConfigBuilder}
  * and consumed by a {@link SpiProvider} when creating an SPI device.
  */
-public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig> {
+public interface SpiConfig extends ChannelConfig, IOConfig {
     /**
      * Configuration property key for the legacy SPI address.
      *

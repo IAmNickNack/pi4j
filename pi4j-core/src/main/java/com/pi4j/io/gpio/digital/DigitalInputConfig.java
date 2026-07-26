@@ -1,6 +1,5 @@
 package com.pi4j.io.gpio.digital;
 
-
 import com.pi4j.context.Context;
 
 /**
@@ -8,7 +7,7 @@ import com.pi4j.context.Context;
  * pull resistance and debounce interval. Instances are typically assembled through a
  * {@link DigitalInputConfigBuilder}.
  */
-public interface DigitalInputConfig extends DigitalConfig<DigitalInputConfig> {
+public interface DigitalInputConfig extends DigitalConfig {
 
     /** Property key under which the pull resistance value is stored in a configuration map. */
     String PULL_RESISTANCE_KEY = "pull";

@@ -160,7 +160,7 @@ public class FFMPermissionHelper {
      *                       belong to the expected group, it lacks group read/write permission, or
      *                       the configuration type is not recognized
      */
-    public static void checkDevicePermissions(String devicePath, IOConfig<?> config) {
+    public static void checkDevicePermissions(String devicePath, IOConfig config) {
         var path = Paths.get(devicePath);
         // checking that device is physically exists
         if (!path.toFile().exists()) {

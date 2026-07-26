@@ -8,7 +8,7 @@ import com.pi4j.util.StringUtil;
 import java.util.Map;
 
 public class DefaultDigitalOutputConfig
-    extends IOBcmConfigBase<DigitalOutputConfig>
+    extends IOBcmConfigBase
     implements DigitalOutputConfig {
 
     // private configuration properties

@@ -7,7 +7,7 @@ import com.pi4j.context.Context;
  * settings: the state applied when the output is initialized and the state applied when Pi4J shuts down.
  * Instances are assembled with a {@link DigitalOutputConfigBuilder}.
  */
-public interface DigitalOutputConfig extends DigitalConfig<DigitalOutputConfig> {
+public interface DigitalOutputConfig extends DigitalConfig {
     /** Configuration property key for the shutdown state value. */
     String SHUTDOWN_STATE_KEY = "shutdown";
     /** Configuration property key for the initial state value. */

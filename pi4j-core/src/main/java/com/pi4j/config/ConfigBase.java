@@ -12,10 +12,8 @@ import java.util.Map;
  * I/O configurations and exposes their raw property map. Concrete I/O configuration classes extend
  * this base to inherit handling of {@code id}, {@code name} and {@code description}, and override
  * {@link #getUniqueIdentifier()} to supply an I/O-type-specific identity.
- *
- * @param <CONFIG_TYPE> the concrete configuration sub-type
  */
-public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
+public class ConfigBase implements Config {
 
     // private configuration variables
     protected String id = null;

@@ -13,7 +13,7 @@ import com.pi4j.provider.Provider;
  * @param <PROVIDER_TYPE> the {@link Provider} type that instantiated and backs this I/O instance
  */
 public abstract class GpioBase<IO_TYPE extends Gpio<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-    CONFIG_TYPE extends GpioConfig<CONFIG_TYPE>, PROVIDER_TYPE extends Provider>
+    CONFIG_TYPE extends GpioConfig, PROVIDER_TYPE extends Provider>
     extends IOBase<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
     implements Gpio<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE> {
 

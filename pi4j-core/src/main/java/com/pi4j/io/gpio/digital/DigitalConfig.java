@@ -1,15 +1,12 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.config.Config;
 import com.pi4j.io.gpio.GpioConfig;
 
 /**
  * Configuration contract for a {@link Digital} I/O instance, extending the generic {@link GpioConfig}
  * with the BCM pin assignment and the {@link DigitalState} that is considered the logical "on" state.
- *
- * @param <CONFIG_TYPE> the concrete configuration type, used as the self-referencing builder/return type
  */
-public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CONFIG_TYPE> {
+public interface DigitalConfig extends GpioConfig {
 
     /**
      * Property key under which the on-state value is stored in a configuration map.

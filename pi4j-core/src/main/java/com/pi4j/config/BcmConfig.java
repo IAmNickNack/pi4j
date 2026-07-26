@@ -4,10 +4,8 @@ package com.pi4j.config;
  * Configuration contract for I/O instances that are addressed by a Broadcom (BCM) GPIO pin number,
  * such as digital inputs/outputs and PWM pins. The {@code bcm} value identifies the physical SoC
  * GPIO pin the I/O is bound to.
- *
- * @param <CONFIG_TYPE> the concrete configuration sub-type, returned by fluent accessors to enable type-safe chaining
  */
-public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+public interface BcmConfig {
     /**
      * Property key under which the legacy "address" value is stored in the configuration properties map.
      *

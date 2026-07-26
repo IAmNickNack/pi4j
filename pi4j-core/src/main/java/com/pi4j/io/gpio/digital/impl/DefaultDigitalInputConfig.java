@@ -10,7 +10,7 @@ import com.pi4j.util.StringUtil;
 import java.util.Map;
 
 public class DefaultDigitalInputConfig
-    extends IOBcmConfigBase<DigitalInputConfig>
+    extends IOBcmConfigBase
     implements DigitalInputConfig {
 
     /**

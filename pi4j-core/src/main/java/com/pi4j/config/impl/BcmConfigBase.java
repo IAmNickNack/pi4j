@@ -1,7 +1,6 @@
 package com.pi4j.config.impl;
 
 import com.pi4j.config.BcmConfig;
-import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 
@@ -9,12 +8,10 @@ import java.util.Map;
 
 /**
  * <p>Abstract AddressConfigBase class.</p>
- *
- * @param <CONFIG_TYPE>
  */
-public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
-    extends ConfigBase<CONFIG_TYPE>
-    implements BcmConfig<CONFIG_TYPE> {
+public abstract class BcmConfigBase
+    extends ConfigBase
+    implements BcmConfig {
 
     // private configuration properties
     protected Integer bcm = null;

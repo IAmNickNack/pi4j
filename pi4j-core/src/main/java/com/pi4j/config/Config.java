@@ -8,10 +8,8 @@ import java.util.Map;
  * the raw underlying property map, and validates its own required values. I/O-specific
  * configurations (such as {@link BcmConfig}, {@link BusConfig} or {@link ChannelConfig}) extend
  * this interface, and instances are typically assembled with a {@link ConfigBuilder}.
- *
- * @param <CONFIG_TYPE> the concrete configuration sub-type
  */
-public interface Config<CONFIG_TYPE> {
+public interface Config {
     /**
      * Property key under which the configuration identifier is stored in the properties map.
      */

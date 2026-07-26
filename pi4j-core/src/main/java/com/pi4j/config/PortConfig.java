@@ -4,10 +4,8 @@ package com.pi4j.config;
  * Configuration contract for I/O that is addressed by a named port.
  * Extends the base {@link Config} contract with a single
  * {@code port} property identified by {@link #PORT_KEY}.
- *
- * @param <CONFIG_TYPE> the concrete configuration type, enabling fluent access on subtypes
  */
-public interface PortConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+public interface PortConfig {
 
     /**
      * Property key under which the port value is stored in the configuration.

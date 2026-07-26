@@ -3,10 +3,8 @@ package com.pi4j.config;
 /**
  * Configuration contract for I/O instances that communicate over a numbered hardware bus, such as
  * I2C, SPI and PWM. The {@code bus} value selects which of the platform's buses the I/O uses.
- *
- * @param <CONFIG_TYPE> the concrete configuration sub-type, returned by fluent accessors to enable type-safe chaining
  */
-public interface BusConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+public interface BusConfig {
     /**
      * Property key under which the bus number is stored in the configuration properties map.
      */
