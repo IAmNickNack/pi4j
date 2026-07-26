@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.Pi4JNativeLibrary;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
