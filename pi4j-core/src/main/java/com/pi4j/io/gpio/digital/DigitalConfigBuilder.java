@@ -9,7 +9,7 @@ import com.pi4j.io.gpio.GpioConfigBuilder;
  * @param <BUILDER_TYPE> the concrete builder type, used as the self-referencing return type for chaining
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type produced by this builder
  */
-public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
+public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends DigitalConfig>
     extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**

@@ -11,7 +11,7 @@ import com.pi4j.io.impl.IOBcmConfigBuilderBase;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
+public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends DigitalConfig>
     extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
