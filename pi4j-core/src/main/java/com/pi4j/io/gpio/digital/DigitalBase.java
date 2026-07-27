@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
 public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
+        CONFIG_TYPE extends DigitalConfig,
         PROVIDER_TYPE extends DigitalProvider>
         extends GpioBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
         implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>

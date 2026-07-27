@@ -1,6 +1,5 @@
 package com.pi4j.io.impl;
 
-import com.pi4j.config.Config;
 import com.pi4j.config.DeviceConfig;
 import com.pi4j.config.impl.DeviceConfigBase;
 import com.pi4j.io.IOConfig;
@@ -8,11 +7,10 @@ import com.pi4j.io.IOConfig;
 import java.util.Map;
 
 /**
- * @param <CONFIG_TYPE>
  */
-public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
-    extends DeviceConfigBase<CONFIG_TYPE>
-    implements IOConfig<CONFIG_TYPE>, DeviceConfig<CONFIG_TYPE> {
+public class IODeviceConfigBase
+    extends DeviceConfigBase
+    implements IOConfig, DeviceConfig {
 
     // private configuration variables
     protected String provider = null;

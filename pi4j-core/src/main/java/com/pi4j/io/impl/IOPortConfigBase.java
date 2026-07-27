@@ -1,6 +1,5 @@
 package com.pi4j.io.impl;
 
-import com.pi4j.config.Config;
 import com.pi4j.config.PortConfig;
 import com.pi4j.config.impl.PortConfigBase;
 import com.pi4j.io.IOConfig;
@@ -8,11 +7,10 @@ import com.pi4j.io.IOConfig;
 import java.util.Map;
 
 /**
- * @param <CONFIG_TYPE>
  */
-public class IOPortConfigBase<CONFIG_TYPE extends Config>
-    extends PortConfigBase<CONFIG_TYPE>
-    implements PortConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {
+public class IOPortConfigBase
+    extends PortConfigBase
+    implements PortConfig, IOConfig {
 
     // private configuration variables
     protected String provider = null;

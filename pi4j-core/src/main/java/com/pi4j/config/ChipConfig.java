@@ -4,10 +4,8 @@ package com.pi4j.config;
  * Configuration contract for I/O instances that are addressed by a chip number, for example the
  * GPIO chip exposed by the Linux GPIO character-device interface. The {@code chip} value selects
  * which controller chip the I/O belongs to.
- *
- * @param <CONFIG_TYPE> the concrete configuration sub-type, returned by fluent accessors to enable type-safe chaining
  */
-public interface ChipConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+public interface ChipConfig {
     /**
      * Property key under which the chip number is stored in the configuration properties map.
      */

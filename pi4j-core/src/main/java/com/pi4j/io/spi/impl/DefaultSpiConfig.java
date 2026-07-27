@@ -7,7 +7,7 @@ import com.pi4j.util.StringUtil;
 import java.util.Map;
 
 public class DefaultSpiConfig
-    extends IOConfigBase<SpiConfig>
+    extends IOConfigBase
     implements SpiConfig {
 
     // private configuration properties

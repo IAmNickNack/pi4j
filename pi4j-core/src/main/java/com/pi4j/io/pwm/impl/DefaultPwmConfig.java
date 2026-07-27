@@ -10,7 +10,7 @@ import com.pi4j.util.StringUtil;
 import java.util.Map;
 
 public class DefaultPwmConfig
-    extends IOConfigBase<PwmConfig>
+    extends IOConfigBase
     implements PwmConfig {
 
     protected Integer chip = null;

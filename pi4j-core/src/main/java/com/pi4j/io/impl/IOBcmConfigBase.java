@@ -1,18 +1,16 @@
 package com.pi4j.io.impl;
 
 import com.pi4j.config.BcmConfig;
-import com.pi4j.config.Config;
 import com.pi4j.config.impl.BcmConfigBase;
 import com.pi4j.io.IOConfig;
 
 import java.util.Map;
 
 /**
- * @param <CONFIG_TYPE>
  */
-public class IOBcmConfigBase<CONFIG_TYPE extends Config>
-    extends BcmConfigBase<CONFIG_TYPE>
-    implements IOConfig<CONFIG_TYPE>, BcmConfig<CONFIG_TYPE> {
+public class IOBcmConfigBase
+    extends BcmConfigBase
+    implements IOConfig, BcmConfig {
 
     // private configuration variables
     protected String provider = null;

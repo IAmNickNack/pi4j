@@ -13,7 +13,7 @@ import com.pi4j.io.IOConfig;
  * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
  * creating the PWM I/O.
  */
-public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfig>, BcmConfig<PwmConfig>, IOConfig<PwmConfig> {
+public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfig {
 
     /**
      * Property key for the legacy PWM address.

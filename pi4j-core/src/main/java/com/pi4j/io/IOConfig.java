@@ -7,10 +7,8 @@ import com.pi4j.config.Config;
  * <p>
  * In addition to the generic properties from {@link Config}, it identifies the {@link com.pi4j.provider.Provider}
  * and platform that should service the I/O instance described by this configuration.
- *
- * @param <CONFIG_TYPE> the concrete configuration type, used for self-referential fluent typing
  */
-public interface IOConfig<CONFIG_TYPE> extends Config<CONFIG_TYPE> {
+public interface IOConfig extends Config {
     /** Configuration property key identifying the target platform. */
     String PLATFORM_KEY = "platform";
     /** Configuration property key identifying the I/O provider. */
