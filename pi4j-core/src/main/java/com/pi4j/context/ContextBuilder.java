@@ -24,7 +24,7 @@ public class ContextBuilder implements Builder<Context> {
     protected Logger logger = LoggerFactory.getLogger(ContextBuilder.class);
 
     // auto detection flags
-    protected boolean autoDetectMockPlugins = !BoardInfoHelper.runningOnRaspberryPi();
+    protected boolean autoDetectMockPlugins = false;
     protected boolean autoDetectProviders = false;
     protected boolean enableShutdownHook = false;
 

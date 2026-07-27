@@ -3,6 +3,7 @@ package com.pi4j.plugin.mock.provider.gpio.digital;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
+import com.pi4j.plugin.mock.Mock;
 
 /**
  * Default implementation of {@link MockDigitalInputProvider}. Extends the pi4j-core
@@ -22,15 +23,11 @@ public class MockDigitalInputProviderImpl extends DigitalInputProviderBase imple
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Returns a deliberately high priority ({@code 1000}) so that, when the mock plugin is on
-     * the classpath, it is preferred over real hardware providers during testing.
+     * Returns Mock.MOCK_PROVIDER_PRIORITY.
      */
     @Override
     public int getPriority() {
-        // if the mock is loaded, then we most probably want to use it for testing
-        return 1000;
+        return Mock.MOCK_PROVIDER_PRIORITY;
     }
 
     /**

@@ -3,6 +3,7 @@ package com.pi4j.plugin.mock.provider.pwm;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;
+import com.pi4j.plugin.mock.Mock;
 
 /**
  * Default in-memory implementation of {@link MockPwmProvider}, extending {@link PwmProviderBase}.
@@ -20,15 +21,12 @@ public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvi
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Returns a deliberately high priority so that, when the mock plugin is present on the
-     * classpath, it is preferred over hardware providers during testing.
+     * Returns Mock.MOCK_PROVIDER_PRIORITY.
      */
     @Override
     public int getPriority() {
         // if the mock is loaded, then we most probably want to use it for testing
-        return 1000;
+        return Mock.MOCK_PROVIDER_PRIORITY;
     }
 
     /**

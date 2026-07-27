@@ -3,6 +3,7 @@ package com.pi4j.plugin.mock.provider.spi;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProviderBase;
+import com.pi4j.plugin.mock.Mock;
 
 /**
  * Default in-memory implementation of {@link MockSpiProvider}, extending {@link SpiProviderBase}.
@@ -20,15 +21,11 @@ public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvi
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Returns a deliberately high priority so that, when the mock plugin is present on the
-     * classpath, it is preferred over hardware providers during testing.
+     * Returns Mock.MOCK_PROVIDER_PRIORITY.
      */
     @Override
     public int getPriority() {
-        // if the mock is loaded, then we most probably want to use it for testing
-        return 1000;
+        return Mock.MOCK_PROVIDER_PRIORITY;
     }
 
     /**

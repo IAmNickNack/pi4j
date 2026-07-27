@@ -94,7 +94,7 @@ public class DefaultContext implements Context {
             Map<IOType, Provider> providers = new HashMap<>();
 
             // only attempt to load platforms and providers from the classpath if an auto detect option is enabled
-            if (config.autoDetectProviders()) {
+            if (config.autoDetectProviders() || config.autoDetectMockPlugins()) {
 
                 // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
                 ServiceLoader<Plugin> serviceLoaderPlugins = ServiceLoader.load(Plugin.class);
@@ -104,6 +104,10 @@ public class DefaultContext implements Context {
 
                     if (!config.autoDetectMockPlugins() && plugin.isMock()) {
                         logger.trace("Ignoring mock plugin: [{}] in classpath", plugin.getClass().getName());
+                        continue;
+                    }
+                    if (!config.autoDetectProviders() && !plugin.isMock()) {
+                        logger.trace("Ignoring non-mock plugin: [{}] in classpath", plugin.getClass().getName());
                         continue;
                     }
 
@@ -120,9 +124,7 @@ public class DefaultContext implements Context {
                         //    OR
                         // Detecting Mocks is enabled and this is a mock plugin
                         // then add any detected providers to the collection to load
-                        if (config.autoDetectProviders() ||  (config.autoDetectMockPlugins() && plugin.isMock())) {
-                            store.providers.forEach(provider -> addProvider(provider, providers));
-                        }
+                        store.providers.forEach(provider -> addProvider(provider, providers));
 
                     } catch (Exception ex) {
                         // unable to initialize this provider instance
