@@ -15,7 +15,10 @@ import com.pi4j.provider.Provider;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class IOPortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+public abstract class IOPortConfigBuilderBase<
+    BUILDER_TYPE extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends Config
+    >
     extends PortConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
     PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
@@ -27,12 +30,14 @@ public abstract class IOPortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
         super(context);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE provider(String provider) {
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());

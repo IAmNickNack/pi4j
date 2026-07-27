@@ -11,7 +11,10 @@ import com.pi4j.config.ConfigBuilder;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+public abstract class BcmConfigBuilderBase<
+    BUILDER_TYPE extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends Config
+    >
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
@@ -21,6 +24,7 @@ public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, C
     protected BcmConfigBuilderBase() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE bcm(Integer bcm) {
         this.properties.put(BcmConfig.BCM_KEY, bcm.toString());

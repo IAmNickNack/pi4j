@@ -10,7 +10,10 @@ import com.pi4j.io.IOBcmConfigBuilder;
  * @param <BUILDER_TYPE> the concrete builder sub-type, returned by fluent setters to enable type-safe chaining
  * @param <CONFIG_TYPE>  the {@link GpioConfig} type produced by this builder
  */
-public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends GpioConfig>
+public interface GpioConfigBuilder<
+    BUILDER_TYPE extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends GpioConfig
+    >
     extends IOBcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**

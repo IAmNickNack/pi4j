@@ -12,7 +12,10 @@ import com.pi4j.context.Context;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+public abstract class PortConfigBuilderBase<
+    BUILDER_TYPE extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends Config
+    >
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
@@ -23,6 +26,7 @@ public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, 
         super();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE port(String port) {
         this.properties.put(PortConfig.PORT_KEY, port);
