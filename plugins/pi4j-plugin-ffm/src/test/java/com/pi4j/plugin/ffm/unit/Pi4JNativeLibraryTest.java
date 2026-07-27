@@ -75,6 +75,7 @@ class Pi4JNativeLibraryTest {
 
     @Test
     void throwsPi4JExceptionForUnknownLibrary() {
+        assumeTrue(isLinux(), "load asserts linux os at runtime");
         try (Arena arena = Arena.ofConfined()) {
             Pi4JException ex = assertThrows(Pi4JException.class,
                 () -> Pi4JNativeLibrary.load("pi4j-definitely-not-a-real-library", arena));
