@@ -13,26 +13,6 @@ public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder<
     extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
-     * Sets the BCM (Broadcom) GPIO pin number for the configuration being built.
-     *
-     * @param address the BCM pin number
-     * @return this builder for method chaining
-     * @deprecated use {@link #bcm(Integer)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    default BUILDER_TYPE address(Integer address) {
-        return bcm(address);
-    }
-
-    /**
-     * Sets the BCM (Broadcom) GPIO pin number for the configuration being built.
-     *
-     * @param bcm the BCM pin number to bind the digital I/O instance to
-     * @return this builder for method chaining
-     */
-    BUILDER_TYPE bcm(Integer bcm);
-
-    /**
      * Sets the {@link DigitalState} to be treated as the logical "on" state for the configuration being built.
      *
      * @param state the state that should map to "on"
