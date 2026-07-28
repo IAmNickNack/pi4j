@@ -1,6 +1,5 @@
 package com.pi4j.context;
 
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContext;
 import com.pi4j.exception.Pi4JException;
