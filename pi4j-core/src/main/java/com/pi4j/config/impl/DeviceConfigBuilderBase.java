@@ -11,7 +11,10 @@ import com.pi4j.config.DeviceConfigBuilder;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+public abstract class DeviceConfigBuilderBase<
+    BUILDER_TYPE extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends Config
+    >
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements DeviceConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
@@ -21,6 +24,7 @@ public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
     protected DeviceConfigBuilderBase() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE device(Integer device) {
         this.properties.put(DeviceConfig.DEVICE_KEY, device.toString());

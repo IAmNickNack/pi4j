@@ -223,7 +223,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // ------------------------------------------------------------------------
 
     @Override
-    default <I extends IO> I create(IOConfig config, IOType ioType) {
+    default <I extends IO<?, ?, ?>> I create(IOConfig config, IOType ioType) {
         // create by explicitly configured IO <PROVIDER> from IO config
         String providerId = config.provider();
         if (StringUtil.isNotNullOrEmpty(providerId)) {

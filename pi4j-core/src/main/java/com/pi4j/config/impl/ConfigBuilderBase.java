@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
-public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-        implements ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public abstract class ConfigBuilderBase<
+    BUILDER_TYPE extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends Config
+    >
+    implements ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     // private configuration variables
     protected final ConcurrentHashMap<String, String> properties = new ConcurrentHashMap<>();
@@ -34,6 +37,7 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
     protected ConfigBuilderBase() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE id(String id){
         this.properties.put(Config.ID_KEY, id);
@@ -45,24 +49,28 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         return this.properties.get(Config.ID_KEY);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE name(String name){
         this.properties.put(Config.NAME_KEY, name);
         return (BUILDER_TYPE) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE description(String description){
         this.properties.put(Config.DESCRIPTION_KEY, description);
         return (BUILDER_TYPE) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE load(Map<String, String> properties) {
         this.properties.putAll(properties);
         return (BUILDER_TYPE) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE load(Map<String, String> properties, String prefixFilter) {
         // if a filter was not provided, then load properties without a filter
