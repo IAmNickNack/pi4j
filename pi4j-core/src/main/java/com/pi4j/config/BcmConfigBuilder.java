@@ -16,8 +16,9 @@ public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuild
      * @deprecated use {@link #bcm(Integer)} instead.
      */
     @Deprecated(forRemoval = true)
-    BUILDER_TYPE address(Integer address);
-
+    default BUILDER_TYPE address(Integer address) {
+        return bcm(address);
+    }
     /**
      * Sets the Broadcom (BCM) GPIO pin number this I/O is bound to.
      *
