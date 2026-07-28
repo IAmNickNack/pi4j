@@ -23,11 +23,7 @@ public class ContextTest {
 
     @BeforeAll
     public void beforeTest() throws Pi4JException {
-        // initialize Pi4J with an auto context
-        // An auto context includes AUTO-DETECT BINDINGS enabled
-        // which will load all detected Pi4J extension libraries
-        // (Platforms and Providers) in the class path
-        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectProviders().build();
+        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().build();
     }
 
     @AfterAll

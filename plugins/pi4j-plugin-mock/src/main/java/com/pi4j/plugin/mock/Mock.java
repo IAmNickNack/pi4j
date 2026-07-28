@@ -10,6 +10,12 @@ package com.pi4j.plugin.mock;
  * @see MockPlugin
  */
 public class Mock {
+
+    /**
+     * A deliberately low priority, ensuring that actual hardware providers are loaded first when auto-detection of
+     * both is enabled. This allows some code to run on "real" and unsupported hardware platforms without change.
+     */
+    public static final int MOCK_PROVIDER_PRIORITY = -1;
     /**
      * Human-readable display name shared by the Mock platform and providers.
      */

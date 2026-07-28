@@ -1,6 +1,5 @@
 package com.pi4j.context;
 
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContext;
 import com.pi4j.exception.Pi4JException;
@@ -24,7 +23,7 @@ public class ContextBuilder implements Builder<Context> {
     protected Logger logger = LoggerFactory.getLogger(ContextBuilder.class);
 
     // auto detection flags
-    protected boolean autoDetectMockPlugins = !BoardInfoHelper.runningOnRaspberryPi();
+    protected boolean autoDetectMockPlugins = false;
     protected boolean autoDetectProviders = false;
     protected boolean enableShutdownHook = false;
 
