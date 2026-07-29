@@ -42,17 +42,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     }
 
     /**
-     * Creates a new {@link DigitalOutputBuilder} that resolves a provider and builds a ready-to-use
-     * {@link DigitalOutput} instance.
-     *
-     * @param context the Pi4J runtime context used to resolve the provider and register the instance
-     * @return a new digital output builder instance
-     */
-    static DigitalOutputBuilder newBuilder(Context context){
-        return DigitalOutputBuilder.newInstance(context);
-    }
-
-    /**
      * Sets the output to the given digital state, driving the underlying pin accordingly.
      *
      * @param state the digital state to drive the output to
