@@ -27,9 +27,6 @@ public class ContextBuilder implements Builder<Context> {
     protected boolean autoDetectProviders = false;
     protected boolean enableShutdownHook = false;
 
-    // default platform identifier
-    protected String defaultPlatformId = null;
-
     // extensibility modules
     protected Collection<Provider> providers = Collections.synchronizedList(new ArrayList<>());
 
