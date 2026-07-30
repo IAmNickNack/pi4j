@@ -3,6 +3,7 @@ package com.pi4j.io;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CProvider;
@@ -11,6 +12,8 @@ import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.io.spi.Spi;
+import com.pi4j.io.spi.SpiConfig;
+import com.pi4j.io.spi.SpiConfigBuilder;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.provider.Provider;
 
@@ -33,9 +36,9 @@ public enum IOType {
     /** Pulse-width modulation output. */
     PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
     /** I2C (Inter-Integrated Circuit) bus device. */
-    I2C(I2CProvider.class, com.pi4j.io.i2c.I2C.class, I2CConfig.class, I2CConfigBuilder.class),
+    I2C(I2CProvider.class, I2C.class, I2CConfig.class, I2CConfigBuilder.class),
     /** SPI (Serial Peripheral Interface) bus device. */
-    SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class);
+    SPI(SpiProvider.class, Spi.class, SpiConfig.class, SpiConfigBuilder.class);
 
     private Class<? extends Provider> providerClass;
     private Class<? extends IO> ioClass;
