@@ -22,7 +22,7 @@ public class NoProvidersTest {
         // Initialize Pi4J with an empty context
         // An empty context disables AUTO-DETECT loading
         // which will not load any detected Pi4J extension
-        // libraries (Platforms and Providers) from the class path
+        // libraries (Providers) from the class path
         pi4j = Pi4J.newContext();
     }
 

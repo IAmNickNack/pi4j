@@ -25,20 +25,6 @@ public class Mock {
      */
     public static final String ID = "mock";
 
-    // Platform name and unique ID
-    /**
-     * Display name of the Mock platform.
-     */
-    public static final String PLATFORM_NAME = NAME + " Platform";
-    /**
-     * Unique ID of the Mock platform, used when registering and resolving the platform.
-     */
-    public static final String PLATFORM_ID = ID + "-platform";
-    /**
-     * Human-readable description of the Mock platform.
-     */
-    public static final String PLATFORM_DESCRIPTION = "Pi4J platform used for mock testing.";
-
     // Digital Input (GPIO) Provider name and unique ID
     /**
      * Display name of the mock digital input (GPIO) provider.

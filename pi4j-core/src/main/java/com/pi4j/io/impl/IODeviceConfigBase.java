@@ -14,7 +14,6 @@ public class IODeviceConfigBase
 
     // private configuration variables
     protected String provider = null;
-    protected String platform = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -32,15 +31,6 @@ public class IODeviceConfigBase
         if (properties.containsKey(PROVIDER_KEY)) {
             this.provider = properties.get(PROVIDER_KEY);
         }
-        // load platform property
-        if (properties.containsKey(PLATFORM_KEY)) {
-            this.platform = properties.get(PLATFORM_KEY);
-        }
-    }
-
-    @Override
-    public String platform() {
-        return this.platform;
     }
 
     @Override
