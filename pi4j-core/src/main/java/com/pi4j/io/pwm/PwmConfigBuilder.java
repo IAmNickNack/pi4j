@@ -20,7 +20,16 @@ public interface PwmConfigBuilder extends
      * @param context the Pi4J context the configuration will be bound to
      * @return a new, empty PWM configuration builder
      */
+    @Deprecated
     static PwmConfigBuilder newInstance(Context context) {
+        return DefaultPwmConfigBuilder.newInstance();
+    }
+
+    /**
+     * Creates a new PWM configuration builder instance.
+     * @return a new, empty PWM configuration builder
+     */
+    static PwmConfigBuilder newInstance() {
         return DefaultPwmConfigBuilder.newInstance();
     }
 
