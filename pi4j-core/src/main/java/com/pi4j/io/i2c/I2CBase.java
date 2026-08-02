@@ -1,7 +1,5 @@
 package com.pi4j.io.i2c;
 
-import com.pi4j.context.Context;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
@@ -55,18 +53,5 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
         if (action == null)
             throw new NullPointerException("Parameter 'action' is mandatory!");
         return this.i2CBus.execute(this, action);
-    }
-
-    @Override
-    public I2C shutdownInternal(Context context) throws ShutdownException {
-        // if this I2C device is still open, then we need to close it since we are shutting down
-        if (this.isOpen()) {
-            try {
-                close();
-            } catch (Exception e) {
-                throw new ShutdownException(e);
-            }
-        }
-        return this;
     }
 }
