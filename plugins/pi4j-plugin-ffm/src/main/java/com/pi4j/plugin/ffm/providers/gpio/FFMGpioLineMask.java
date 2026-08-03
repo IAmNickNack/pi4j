@@ -3,7 +3,8 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import java.util.List;
 
 /**
- * Represents a mask for GPIO lines.
+ * Utility record which can be used to represent both the mask for a set of line offsets and the offsets for
+ * a mask (whichever is already known)
  * @param offsets The offsets of the GPIO lines.
  * @param mask The mask representing the GPIO lines.
  */
