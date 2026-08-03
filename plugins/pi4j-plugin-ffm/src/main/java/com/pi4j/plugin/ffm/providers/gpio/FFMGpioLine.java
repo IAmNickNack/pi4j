@@ -24,8 +24,8 @@ import java.util.List;
  * {@link FFMDigitalInput} and {@link FFMDigitalOutput} to eliminate duplicated native code.
  * <p>
  * A line is opened via {@link #openAndRequest} (which issues the {@code GPIO_V2_GET_LINE_IOCTL}
- * and retains the resulting per-request file descriptor), read via {@link #readState}, written
- * via {@link #writeState}, and released via {@link #close}.
+ * and retains the resulting per-request file descriptor), read via {@link #readValue()}, written
+ * via {@link #writeValue(int)}, and released via {@link #close}.
  */
 class FFMGpioLine {
     private static final Logger logger = LoggerFactory.getLogger(FFMGpioLine.class);
