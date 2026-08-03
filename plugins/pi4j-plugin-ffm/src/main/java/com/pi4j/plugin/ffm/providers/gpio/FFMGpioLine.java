@@ -93,7 +93,7 @@ class FFMGpioLine {
             }
 
             var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(mask.offsets(), ("pi4j." + consumer).getBytes(), lineConfig, 1, 0, 0);
+            var lineRequest = new LineRequest(mask.offsets(), ("pi4j." + consumer).getBytes(), lineConfig, mask.offsets().length, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
             this.closed = false;
