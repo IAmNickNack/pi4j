@@ -33,7 +33,7 @@ class EventWatcher implements Runnable {
     static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
 
     private final int fd;
-    private final int offset;
+    private final long mask;
     private final FileDescriptorNative file;
     private final PinEvent pinEvent;
     private final PinEventProcessing eventProcessor;
@@ -41,9 +41,9 @@ class EventWatcher implements Runnable {
 
     private volatile boolean stopWatching = false;
 
-    EventWatcher(int fd, int offset, long debounce, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
+    EventWatcher(int fd, long mask, long debounce, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
         this.fd = fd;
-        this.offset = offset;
+        this.mask = mask;
         this.file = file;
         this.pinEvent = pinEvent;
         this.eventProcessor = eventProcessor;
@@ -60,7 +60,7 @@ class EventWatcher implements Runnable {
         PinEvent lastDebouncedState = null;
         long lastEventReceivedTimeNs = 0;
         logger.trace("{} - Start polling GPIO data on offset {} at {}",
-            Thread.currentThread().getName(), offset, timestamp);
+            Thread.currentThread().getName(), mask, timestamp);
         while (!stopWatching) {
             try {
                 // PollingData must be recreated each time — poll does not erase revents between calls
@@ -69,14 +69,14 @@ class EventWatcher implements Runnable {
                 if (pollData == null) {
                     var duration = timestamp.until(Instant.now()).toMillis();
                     logger.trace("{} - No events detected on offset {}: polling timeout at {} (took {}ms)",
-                        Thread.currentThread().getName(), offset, timestamp, duration);
+                        Thread.currentThread().getName(), mask, timestamp, duration);
                     if (lastDebouncedEvent != null && debounceNs > 0 && lastEventReceivedTimeNs > 0) {
                         long currentTimeNs = System.nanoTime();
                         long timeSinceLastEventNs = currentTimeNs - lastEventReceivedTimeNs;
                         if (timeSinceLastEventNs >= debounceNs) {
                             logger.trace(
                                 "{} - Dispatching pending debounced event on offset {} after timeout ({}ns >= {}ns)",
-                                Thread.currentThread().getName(), offset, timeSinceLastEventNs, debounceNs);
+                                Thread.currentThread().getName(), mask, timeSinceLastEventNs, debounceNs);
                             eventList.add(lastDebouncedEvent);
                             eventProcessor.process(eventList);
                             eventList.clear();
@@ -89,7 +89,7 @@ class EventWatcher implements Runnable {
                 }
                 if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
                     logger.error("{} - Internal error during polling on offset {}. Last polling data: {}",
-                        Thread.currentThread().getName(), offset, pollData);
+                        Thread.currentThread().getName(), mask, pollData);
                     stopWatching();
                     continue;
                 }
@@ -110,29 +110,29 @@ class EventWatcher implements Runnable {
                         memoryBuffer.asByteBuffer().put(holder);
                         var event = LineEvent.createEmpty().from(memoryBuffer);
                         logger.trace("{} - Detected new event on offset {}: {}",
-                            Thread.currentThread().getName(), offset, event);
+                            Thread.currentThread().getName(), mask, event);
                         if ((event.id() & this.pinEvent.getValue()) != 0) {
                             var pinEventType = PinEvent.getByValue(event.id());
                             logger.trace("{} - Processing event on offset {}: {}",
-                                Thread.currentThread().getName(), offset, pinEventType);
+                                Thread.currentThread().getName(), mask, pinEventType);
                             DetectedEvent detectedEvent =
                                 new DetectedEvent(event.timestampNs(), pinEventType, event.lineSeqno());
                             if (debounceNs > 0) {
                                 if (lastDebouncedEvent == null) {
                                     logger.trace("{} - Starting debounce period on offset {} for {}",
-                                        Thread.currentThread().getName(), offset, pinEventType);
+                                        Thread.currentThread().getName(), mask, pinEventType);
                                 } else {
                                     long timeSinceLastEventNs =
                                         detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
                                     if (timeSinceLastEventNs < debounceNs) {
                                         logger.trace(
                                             "{} - Event on offset {} within debounce period ({}ns < {}ns), updating to latest",
-                                            Thread.currentThread().getName(), offset,
+                                            Thread.currentThread().getName(), mask,
                                             timeSinceLastEventNs, debounceNs);
                                     } else {
                                         logger.trace(
                                             "{} - Debounce period passed on offset {} ({}ns >= {}ns), dispatching event",
-                                            Thread.currentThread().getName(), offset,
+                                            Thread.currentThread().getName(), mask,
                                             timeSinceLastEventNs, debounceNs);
                                         if (lastDebouncedState != null) {
                                             eventList.add(lastDebouncedEvent);
@@ -148,18 +148,18 @@ class EventWatcher implements Runnable {
                         }
                     }
                     logger.trace("{} - Total events on offset {}: {}",
-                        Thread.currentThread().getName(), offset, eventList.size());
+                        Thread.currentThread().getName(), mask, eventList.size());
                     if (!eventList.isEmpty()) {
                         eventProcessor.process(eventList);
                         eventList.clear();
                     }
                     logger.trace("{} - Total processing on offset {} took {}ms",
-                        Thread.currentThread().getName(), offset, timestamp.until(Instant.now()).toMillis());
+                        Thread.currentThread().getName(), mask, timestamp.until(Instant.now()).toMillis());
                     timestamp = Instant.now();
                 }
             } catch (Throwable e) {
                 logger.error("{} - Error while polling pin on offset {}",
-                    Thread.currentThread().getName(), offset, e);
+                    Thread.currentThread().getName(), mask, e);
                 throw new Pi4JException(e);
             }
         }
