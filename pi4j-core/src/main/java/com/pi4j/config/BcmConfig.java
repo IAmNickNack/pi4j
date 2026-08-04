@@ -1,5 +1,7 @@
 package com.pi4j.config;
 
+import com.pi4j.io.Bcm;
+
 /**
  * Configuration contract for I/O instances that are addressed by a Broadcom (BCM) GPIO pin number,
  * such as digital inputs/outputs and PWM pins. The {@code bcm} value identifies the physical SoC
@@ -56,14 +58,14 @@ public interface BcmConfig {
      *
      * @return the BCM GPIO pin number, or {@code null} if not configured
      */
-    Integer bcm();
+    Bcm bcm();
 
     /**
      * Returns the Broadcom (BCM) GPIO pin number this I/O is bound to.
      *
      * @return the BCM GPIO pin number, or {@code null} if not configured
      */
-    default Integer getBcm() {
+    default Bcm getBcm() {
         return this.bcm();
     }
 }

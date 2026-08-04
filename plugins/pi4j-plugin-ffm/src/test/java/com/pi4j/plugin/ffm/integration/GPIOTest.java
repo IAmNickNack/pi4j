@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.integration;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.Bcm;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -113,7 +114,7 @@ public class GPIOTest extends BaseSetup {
             .build();
         var input = pi4j0.digitalInput().create(config);
         assertEquals(99, input.config().debounce());
-        assertEquals(3, input.bcm());
+        assertEquals(Bcm.fromOffset(3), input.bcm());
         assertEquals(PullResistance.PULL_DOWN, input.pull());
     }
 
@@ -125,7 +126,7 @@ public class GPIOTest extends BaseSetup {
                 .bcm(4)
                 .build()
         );
-        assertEquals(4, output.bcm());
+        assertEquals(Bcm.fromOffset(4), output.bcm());
     }
 
     @Test

@@ -19,6 +19,6 @@ public interface GpioConfig extends BusConfig, BcmConfig, IOConfig {
      */
     @Override
     default int getUniqueIdentifier() {
-        return bcm();
+        return bcm().intMask();
     }
 }

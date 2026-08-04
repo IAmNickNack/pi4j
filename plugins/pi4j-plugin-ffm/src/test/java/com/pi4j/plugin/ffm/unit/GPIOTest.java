@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.definition.BoardModel;
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
+import com.pi4j.io.Bcm;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -116,7 +117,7 @@ public class GPIOTest {
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(0).build();
             var pin = pi4j0.digitalInput().create(builder);
-            assertEquals(0, pin.bcm());
+            assertEquals(Bcm.fromOffset(0), pin.bcm());
         }
     }
 
@@ -345,7 +346,7 @@ public class GPIOTest {
                 .build();
             var pin = pi4j0.digitalInput().create(config);
             assertEquals(99, pin.config().debounce());
-            assertEquals(3, pin.bcm());
+            assertEquals(Bcm.fromOffset(3), pin.bcm());
             assertEquals(PullResistance.PULL_DOWN, pin.pull());
         }
     }
@@ -367,7 +368,7 @@ public class GPIOTest {
                 .bcm(4)
                 .build();
             var pin = pi4j0.digitalOutput().create(builder);
-            assertEquals(4, pin.bcm());
+            assertEquals(Bcm.fromOffset(4), pin.bcm());
         }
     }
 
@@ -522,7 +523,7 @@ public class GPIOTest {
             BoardInfoHelper.reinitialize();
             var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
             var pin = mockingBoard.input(5);
-            assertEquals(5, pin.bcm());
+            assertEquals(Bcm.fromOffset(5), pin.bcm());
         }
     }
 

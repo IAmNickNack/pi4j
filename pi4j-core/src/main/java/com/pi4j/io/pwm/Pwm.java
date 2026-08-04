@@ -1,6 +1,7 @@
 package com.pi4j.io.pwm;
 
 import com.pi4j.context.Context;
+import com.pi4j.io.Bcm;
 import com.pi4j.io.IO;
 import com.pi4j.io.OnOff;
 import com.pi4j.io.exception.IOException;
@@ -58,7 +59,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return pwm bcm
      */
-    default int getBcm() {
+    default Bcm getBcm() {
         return config().getBcm();
     }
 
