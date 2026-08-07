@@ -26,7 +26,7 @@ public interface I2CConfigBuilder extends
     }
 
     /**
-     * Creates a new builder instance.
+     * Internal method creating a new builder instance; please use I2C.newConfigBuilder() instead.
      *
      * @return a new {@link I2CConfigBuilder}
      */

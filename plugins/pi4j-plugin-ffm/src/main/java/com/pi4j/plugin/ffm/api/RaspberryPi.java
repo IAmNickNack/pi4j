@@ -63,7 +63,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link I2C} handle bound to bus 1 and the given address
          */
         public I2C i2c1(int device, I2CImplementation implementation) {
-            var config = I2CConfig.newBuilder()
+            var config = I2C.newConfigBuilder()
                 .bus(1)
                 .device(device)
                 .i2cImplementation(implementation)
@@ -90,7 +90,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link Spi} handle bound to bus 0
          */
         public Spi spi0(int baudRate, SpiMode mode) {
-            var config = SpiConfig.newBuilder()
+            var config = Spi.newConfigBuilder()
                 .bus(0)
                 .baud(baudRate)
                 .mode(mode)
@@ -137,7 +137,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link Spi} handle bound to bus 1
          */
         public Spi spi1() {
-            var config = SpiConfig.newBuilder()
+            var config = Spi.newConfigBuilder()
                 .bus(1)
                 .baud(40_000)
                 .mode(SpiMode.MODE_1)
@@ -214,7 +214,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link DigitalInput} bound to the given line
          */
         public DigitalInput input(int pin) {
-            var config = DigitalInputConfig.newBuilder()
+            var config = DigitalInput.newConfigBuilder()
                 .bcm(pin)
                 .build();
             return context.create(config);
@@ -238,7 +238,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link DigitalOutput} bound to the given line
          */
         public DigitalOutput output(int pin) {
-            var config = DigitalOutputConfig.newBuilder()
+            var config = DigitalOutput.newConfigBuilder()
                 .bcm(pin)
                 .build();
             return context.create(config);

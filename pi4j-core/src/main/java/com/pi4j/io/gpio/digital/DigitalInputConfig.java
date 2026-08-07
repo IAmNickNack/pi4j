@@ -53,17 +53,6 @@ public interface DigitalInputConfig extends DigitalConfig {
      */
     @Deprecated
     static DigitalInputConfigBuilder newBuilder(Context context)  {
-        return DigitalInputConfigBuilder.newInstance(context);
-    }
-
-    /**
-     * Creates a new {@link DigitalInputConfigBuilder} for assembling a digital input configuration.
-     *
-     * @return a new configuration builder instance
-     * @deprecated As of version 5, please use DigitalInput.newConfigBuilder() instead.
-     */
-    @Deprecated
-    static DigitalInputConfigBuilder newBuilder()  {
         return DigitalInputConfigBuilder.newInstance();
     }
 }
