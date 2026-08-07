@@ -25,7 +25,7 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      *
      * @param context the Pi4J runtime context the configuration will be associated with
      * @return a new configuration builder instance
-     * @deprecated the context argument is no longer required; use {@link #newConfigBuilder()} instead
+     * @deprecated the context argument is no longer required; use {@link #newConfigBuilder()} instead.
      */
     @Deprecated
     static DigitalOutputConfigBuilder newConfigBuilder(Context context){

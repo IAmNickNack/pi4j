@@ -38,7 +38,7 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
      *
      * @param context the Pi4J runtime context
      * @return a new builder instance
-     * @deprecated the context argument is no longer required; use {@link #newInstance()} instead
+     * @deprecated the context argument is no longer required; use DigitalOutput.newConfigBuilder() instead.
      */
     @Deprecated
     static DigitalOutputConfigBuilder newInstance(Context context) {
@@ -46,7 +46,8 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
     }
 
     /**
-     * Creates a new digital output config builder.
+     * Internal method creating a new digital output config builder.
+     * Please use DigitalOutput.newConfigBuilder() instead.
      *
      * @return a new builder instance
      */

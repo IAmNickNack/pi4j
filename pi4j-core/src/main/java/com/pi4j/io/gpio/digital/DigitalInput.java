@@ -18,8 +18,19 @@ public interface DigitalInput extends Digital<DigitalInput, DigitalInputConfig, 
      *
      * @param context the Pi4J context (not required by the current implementation but kept for API consistency)
      * @return a new configuration builder instance
+     * @deprecated Use newConfigBuilder() instead.
      */
+    @Deprecated
     static DigitalInputConfigBuilder newConfigBuilder(Context context){
+        return newConfigBuilder();
+    }
+
+    /**
+     * Creates a new {@link DigitalInputConfigBuilder} for assembling a digital input configuration.
+     *
+     * @return a new configuration builder instance
+     */
+    static DigitalInputConfigBuilder newConfigBuilder(){
         return DigitalInputConfigBuilder.newInstance();
     }
 
