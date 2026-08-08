@@ -31,7 +31,9 @@ public interface BcmConfig {
      * Use the correct config related to the IO type.
      */
     @Deprecated(forRemoval = true)
-    Integer address();
+    default Integer address() {
+        return this.bcm().intMask();
+    }
 
     /**
      * Returns the configured pin number under its legacy "address" name.
