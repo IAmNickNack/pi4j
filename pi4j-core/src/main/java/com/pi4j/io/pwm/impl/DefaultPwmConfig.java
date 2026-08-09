@@ -1,5 +1,6 @@
 package com.pi4j.io.pwm.impl;
 
+import com.pi4j.io.Bcm;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.io.pwm.PwmConfig;
@@ -7,6 +8,7 @@ import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class DefaultPwmConfig
@@ -15,7 +17,7 @@ public class DefaultPwmConfig
 
     protected Integer chip = null;
     protected Integer channel = null;
-    protected Integer bcm = null;
+    protected Bcm bcm = null;
 
     // private configuration properties
     protected Double dutyCycle = null;
@@ -50,7 +52,10 @@ public class DefaultPwmConfig
         }
 
         if (properties.containsKey(PWM_BCM)) {
-            this.bcm = Integer.valueOf(properties.get(PWM_BCM));
+            var offsets = Arrays.stream(properties.get(PWM_BCM).split(","))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+            this.bcm = Bcm.fromOffsets(offsets);
         }
 
         // load optional pwm duty-cycle from properties
@@ -119,7 +124,7 @@ public class DefaultPwmConfig
     }
 
     @Override
-    public Integer bcm() {
+    public Bcm bcm() {
         return this.bcm;
     }
 
@@ -127,7 +132,7 @@ public class DefaultPwmConfig
     public int getUniqueIdentifier() {
         return (chip == null ? 0 : (chip << 16))
             + (channel == null ? 0 : (channel << 8))
-            + (bcm == null ? 0 : bcm);
+            + (bcm == null ? 0 : bcm.intMask());
     }
 
     @Override
