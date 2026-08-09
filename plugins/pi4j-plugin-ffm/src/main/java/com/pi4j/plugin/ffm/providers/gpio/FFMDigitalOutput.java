@@ -36,7 +36,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     public FFMDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
-        this.line = new FFMGpioLine(config.bcm(), config.bus());
+        this.line = new FFMGpioLine(config.bcm().mask(), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
 
@@ -65,15 +65,15 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             var outputValues = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
             attributes.add(new LineConfigAttribute(outputValues, 1L));
-            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.mask, initialState);
+            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.bcm, initialState);
         }
         try {
             line.openAndRequest(flags, attributes, getClass().getSimpleName());
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.mask, e.getMessage());
+            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.bcm, e.getMessage());
             throw e;
         }
-        logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
+        logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.bcm);
         return super.initialize(context);
     }
 
@@ -87,13 +87,13 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
-        logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.mask);
+        logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.bcm);
         try {
             line.close();
         } catch (Exception e) {
             throw new ShutdownException(e);
         }
-        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.mask);
+        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.bcm);
         return this;
     }
 

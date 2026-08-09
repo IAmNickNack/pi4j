@@ -1,5 +1,6 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
+import com.pi4j.io.Bcm;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -34,14 +35,18 @@ class FFMGpioLine {
     final FileDescriptorNative file = new FileDescriptorNative();
 
     final String deviceName;
-    final FFMGpioLineMask mask;
+    final Bcm bcm;
 
     int chipFileDescriptor;
     boolean closed = false;
 
-    FFMGpioLine(int mask, int bus) {
-        this.mask = new FFMGpioLineMask(mask);
+    FFMGpioLine(Bcm bcm, int bus) {
+        this.bcm = bcm;
         this.deviceName = "/dev/gpiochip" + bus;
+    }
+
+    FFMGpioLine(long mask, int bus) {
+        this(Bcm.fromMask(mask), bus);
     }
 
     /**
@@ -70,34 +75,34 @@ class FFMGpioLine {
             throw new InitializeException(
                 "Device '" + deviceName + "' cannot be accessed with current user.");
         }
-        logger.info("{}-{} - requesting GPIO line ({})...", deviceName, mask, consumer);
-        logger.trace("{}-{} - opening device file.", deviceName, mask);
+        logger.info("{}-{} - requesting GPIO line ({})...", deviceName, bcm, consumer);
+        logger.trace("{}-{} - opening device file.", deviceName, bcm);
         var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
         // The chip fd is only needed to read line info and issue the request.
         // Close it in a finally so any early-exit cannot leak it.
         try {
             var linesInUse = new ArrayList<Integer>();
-            for (var i = 0; i < mask.offsets().length; i++) {
-                var offset = mask.offsets()[i];
+            for (var i = 0; i < bcm.offsets().length; i++) {
+                var offset = bcm.offsets()[i];
 
                 var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, offset, 0, 0, new LineAttribute[]{});
-                logger.trace("{}-{} - getting line info.", deviceName, mask);
+                logger.trace("{}-{} - getting line info.", deviceName, bcm);
                 lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
                 if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
                     linesInUse.add(offset);
                 }
-                logger.trace("{}-{} - GPIO line info: {}", deviceName, mask, lineInfo);
+                logger.trace("{}-{} - GPIO line info: {}", deviceName, bcm, lineInfo);
             }
             if (!linesInUse.isEmpty()) {
-                throw new InitializeException("Offsets are in use: " + new FFMGpioLineMask(linesInUse));
+                throw new InitializeException("Offsets are in use: " + Bcm.fromOffsets(linesInUse));
             }
 
             var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(mask.offsets(), ("pi4j." + consumer).getBytes(), lineConfig, mask.offsets().length, 0, 0);
+            var lineRequest = new LineRequest(bcm.offsets(), ("pi4j." + consumer).getBytes(), lineConfig, bcm.offsets().length, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
             this.closed = false;
-            logger.info("{}-{} - GPIO line configured: {}", deviceName, mask, result);
+            logger.info("{}-{} - GPIO line configured: {}", deviceName, bcm, result);
         } finally {
             file.close(fd);
         }
@@ -111,11 +116,11 @@ class FFMGpioLine {
      */
     int readValue() {
         checkClosed();
-        logger.trace("{}-{} - reading GPIO offset.", deviceName, mask);
+        logger.trace("{}-{} - reading GPIO offset.", deviceName, bcm);
         var lineValues = new LineValues(0, Long.MAX_VALUE);
         try {
             var result = ioctl.call(chipFileDescriptor, Command.getGpioV2GetValuesIoctl(), lineValues);
-            logger.trace("{}-{} - GPIO offset state is {}.", deviceName, mask, result.bits());
+            logger.trace("{}-{} - GPIO offset state is {}.", deviceName, bcm, result.bits());
             return (int) result.bits();
         } catch (Exception e) {
             throw new Pi4JException(e);
@@ -130,7 +135,7 @@ class FFMGpioLine {
      */
     void writeValue(int value) {
         checkClosed();
-        logger.trace("{}-{} - writing GPIO offset {}.", deviceName, mask, value);
+        logger.trace("{}-{} - writing GPIO offset {}.", deviceName, bcm, value);
         var lineValues = new LineValues(value, Long.MAX_VALUE);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
@@ -144,7 +149,7 @@ class FFMGpioLine {
      */
     void close() {
         if (chipFileDescriptor > 0) {
-            logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, mask, chipFileDescriptor);
+            logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, bcm, chipFileDescriptor);
             file.close(chipFileDescriptor);
         }
         this.closed = true;
@@ -152,7 +157,7 @@ class FFMGpioLine {
 
     void checkClosed() {
         if (closed) {
-            throw new Pi4JException("Offset " + mask + " is closed");
+            throw new Pi4JException("Offset " + bcm + " is closed");
         }
     }
 

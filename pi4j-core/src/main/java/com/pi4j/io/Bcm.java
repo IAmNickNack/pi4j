@@ -1,50 +1,60 @@
-package com.pi4j.plugin.ffm.providers.gpio;
+package com.pi4j.io;
 
 import java.util.List;
 
 /**
  * Utility record which can be used to represent both the mask for a set of line offsets and the offsets for
- * a mask (whichever is already known)
+ * a mask (whichever is already known).
  * @param offsets The offsets of the GPIO lines.
  * @param mask The mask representing the GPIO lines.
  */
-public record FFMGpioLineMask(
+public record Bcm(
     int[] offsets,
     long mask
 ) {
     /**
+     * This could be lossy if the mask contains bits set beyond the range of an int. I.e. pin numbers > 31.
+     * This should probably be discouraged and the API not provide this function. It is currently included
+     * for backwards compatibility with {@link com.pi4j.config.Config#getUniqueIdentifier()}
+     * @return the mask as an int
+     */
+    public int intMask() {
+        return (int) mask;
+    }
+
+    /**
      * Constructs a FFMGpioLineMask from a single offset.
      * @param offset The offset of the GPIO line.
      */
-    public FFMGpioLineMask(int offset) {
-        this(new int[]{offset}, 1L << offset);
+    public static Bcm fromOffset(int offset) {
+        return new Bcm(new int[]{offset}, 1L << offset);
     }
 
     /**
      * Constructs a FFMGpioLineMask from an array of offsets.
      * @param offsets The offsets of the GPIO lines.
      */
-    public FFMGpioLineMask(int[] offsets) {
+    public static Bcm fromOffsets(int[] offsets) {
         long mask = 0;
         for (int offset : offsets) {
             mask |= 1L << offset;
         }
-        this(offsets, mask);
+        return new Bcm(offsets, mask);
     }
 
     /**
      * Constructs a FFMGpioLineMask from a list of offsets.
      * @param offsets The offsets of the GPIO lines.
      */
-    public FFMGpioLineMask(List<Integer> offsets) {
-        this(offsets.stream().mapToInt(Integer::intValue).toArray());
+    public static Bcm fromOffsets(List<Integer> offsets) {
+        return fromOffsets(offsets.stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
      * Constructs a FFMGpioLineMask from a mask.
      * @param mask The mask representing the GPIO lines.
      */
-    public FFMGpioLineMask(long mask) {
+    public static Bcm fromMask(long mask) {
         int[] offsets = new int[Long.bitCount(mask)];
         int index = 0;
         for (int i = 0; i < 64; i++) {
@@ -52,7 +62,30 @@ public record FFMGpioLineMask(
                 offsets[index++] = i;
             }
         }
-        this(offsets, mask);
+        return new Bcm(offsets, mask);
+    }
+
+    /**
+     * Operation to return the intersection of two BCM masks.
+     * @param other the value to compare against
+     * @return non-null if an intersection of the masks exists, null otherwise
+     */
+    public Bcm and(Bcm other) {
+        var result = this.mask & other.mask;
+        if (result != 0) {
+            return Bcm.fromMask(result);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Checks if there is a conflict between two BCM masks.
+     * @param other the value to compare against
+     * @return true if there is a conflict, false otherwise
+     */
+    public boolean conflictsWith(Bcm other) {
+        return this.and(other) != null;
     }
 
     /**
@@ -64,7 +97,7 @@ public record FFMGpioLineMask(
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        FFMGpioLineMask that = (FFMGpioLineMask) obj;
+        Bcm that = (Bcm) obj;
         return mask == that.mask;
     }
 
