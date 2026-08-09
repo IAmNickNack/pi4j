@@ -151,6 +151,10 @@ public class FFMGpioLine {
         }
     }
 
+    /**
+     * Allow the line to be reconfigured at runtime
+     * @param config the line config to apply
+     */
     public void reconfigure(LineConfig config) {
         checkClosed();
         logger.trace("{}-{} - reconfiguring GPIO offset.", deviceName, bcm);
