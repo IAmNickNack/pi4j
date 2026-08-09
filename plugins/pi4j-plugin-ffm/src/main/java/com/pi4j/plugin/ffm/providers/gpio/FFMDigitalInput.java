@@ -5,6 +5,7 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
@@ -130,7 +131,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                 .factory();
             this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
-        var watcher = new EventWatcher(line.chipFileDescriptor, line.bcm.mask(), debounce, line.file, PinEvent.BOTH, events -> {
+        var watcher = new EventWatcher(line.getChipFileDescriptor(), line.bcm.mask(), debounce, line.file, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
                 var state = switch (detectedEvent.pinEvent()) {
                     case RISING -> DigitalState.HIGH;
@@ -207,7 +208,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                 }
             }
         } catch (Exception e) {
-            line.closed = true;
+            // TODO: check that finally will invoke this anyway
+//            line.closed = true;
             throw new ShutdownException(e);
         } finally {
             line.close();
