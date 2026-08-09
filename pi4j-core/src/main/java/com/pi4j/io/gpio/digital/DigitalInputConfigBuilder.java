@@ -11,8 +11,6 @@ import java.util.concurrent.TimeUnit;
  */
 public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
 
-    DigitalInputConfigBuilder bcm(Integer bcm);
-
     /**
      * Sets the pull resistance (pull-up, pull-down, or none) to apply to the input pin.
      *
