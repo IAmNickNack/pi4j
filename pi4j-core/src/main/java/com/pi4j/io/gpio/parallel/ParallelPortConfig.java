@@ -38,24 +38,26 @@ public record ParallelPortConfig(
 ) implements IOConfig {
 
     @Override
-    public int getUniqueIdentifier() {
-        return bcm.intMask();
-    }
-
-    @Override
     public String provider() {
-        throw new UnsupportedOperationException("Unsupported operation");
+        // TODO: question if this is needed. I think this is only required for name-based component scan
+        //  (which is likely redundant)
+        return ParallelPortProvider.class.getName();
     }
 
     @Override
     public Map<String, String> properties() {
+        // TODO: question if this is needed. It seems unnecessary if configs don't read/write properties
+        // For now, just fail if this is called
         throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override
     public void validate() {
-        // this current core codebase doesn't seem to do anything here except check that the ID is non-null
-        // `@NonNull` annotations could be used to indicate this requirement, so leaving faults up to the user(?)
+        // The current core codebase doesn't seem to do anything here except check that the ID is non-null
+        // Either (or both) more idiomatic solutions could be applied:
+        // - @NonNull` annotations could be used to indicate this requirement, so leaving faults up to the user(?)
+        // - Record initialisation could validate this after construction.
+        // TODO: Check if validation is relevant
         if (id == null) {
             throw new IllegalStateException("ID cannot be null");
         }
