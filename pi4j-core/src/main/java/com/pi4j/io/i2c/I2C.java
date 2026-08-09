@@ -29,7 +29,7 @@ public interface I2C
      * @return a new {@link I2CConfigBuilder} instance
      * @deprecated user newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static I2CConfigBuilder newConfigBuilder(Context context) {
         return newConfigBuilder();
     }

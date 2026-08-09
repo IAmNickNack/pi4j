@@ -20,7 +20,7 @@ public interface DigitalInput extends Digital<DigitalInput, DigitalInputConfig, 
      * @return a new configuration builder instance
      * @deprecated Use newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static DigitalInputConfigBuilder newConfigBuilder(Context context){
         return newConfigBuilder();
     }

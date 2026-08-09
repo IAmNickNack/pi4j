@@ -22,7 +22,7 @@ public interface PwmConfigBuilder extends
      * @return a new, empty PWM configuration builder
      * @deprecated Please use Pwm.newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static PwmConfigBuilder newInstance(Context context) {
         return DefaultPwmConfigBuilder.newInstance();
     }
@@ -33,7 +33,6 @@ public interface PwmConfigBuilder extends
      * @return a new, empty PWM configuration builder
      * @deprecated Please use Pwm.newConfigBuilder() instead.
      */
-    @Deprecated
     static PwmConfigBuilder newInstance() {
         return DefaultPwmConfigBuilder.newInstance();
     }

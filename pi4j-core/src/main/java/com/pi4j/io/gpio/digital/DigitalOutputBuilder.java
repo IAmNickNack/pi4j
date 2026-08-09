@@ -11,7 +11,7 @@ import com.pi4j.provider.Provider;
  *
  * @deprecated Please use context.create(DigitalInput.newConfigBuilder()....) like for other IO types.
  */
-@Deprecated
+@Deprecated(since="5.0")
 public interface DigitalOutputBuilder {
 
     /**

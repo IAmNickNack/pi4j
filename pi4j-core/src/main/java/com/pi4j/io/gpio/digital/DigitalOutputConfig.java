@@ -65,7 +65,7 @@ public interface DigitalOutputConfig extends DigitalConfig {
      * @return a new configuration builder instance
      * @deprecated Please use DigitalOutput.newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static DigitalOutputConfigBuilder newBuilder(Context context)  {
         return DigitalOutputConfigBuilder.newInstance();
     }

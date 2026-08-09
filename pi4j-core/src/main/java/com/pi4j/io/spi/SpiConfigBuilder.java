@@ -18,7 +18,7 @@ public interface SpiConfigBuilder extends
      * @return a new builder instance
      * @deprecated use Spi.newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static SpiConfigBuilder newInstance(Context context) {
         return DefaultSpiConfigBuilder.newInstance(context);
     }

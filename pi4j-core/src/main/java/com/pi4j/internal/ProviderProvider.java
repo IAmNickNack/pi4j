@@ -14,7 +14,7 @@ import com.pi4j.provider.exception.ProviderNotFoundException;
 /**
  * @deprecated Please use Context.create() methods directly. They are type safe wrt. the requested IO configuration.
  */
-@Deprecated
+@Deprecated(since="5.0")
 public interface ProviderProvider {
 
     /**

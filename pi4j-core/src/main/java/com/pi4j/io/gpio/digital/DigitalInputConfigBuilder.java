@@ -46,7 +46,7 @@ public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalI
      * @return a new builder instance
      * @deprecated use DigitalInptu.newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static DigitalInputConfigBuilder newInstance(Context context) {
         return DefaultDigitalInputConfigBuilder.newInstance(context);
     }

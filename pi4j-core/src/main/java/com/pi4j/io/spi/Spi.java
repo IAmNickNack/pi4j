@@ -53,7 +53,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @return a new SPI configuration builder instance
      * @deprecated use newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static SpiConfigBuilder newConfigBuilder(Context context) {
         return SpiConfigBuilder.newInstance();
     }

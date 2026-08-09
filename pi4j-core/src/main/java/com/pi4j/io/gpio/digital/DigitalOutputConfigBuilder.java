@@ -40,7 +40,7 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
      * @return a new builder instance
      * @deprecated the context argument is no longer required; use DigitalOutput.newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static DigitalOutputConfigBuilder newInstance(Context context) {
         return DefaultDigitalOutputConfigBuilder.newInstance(context);
     }

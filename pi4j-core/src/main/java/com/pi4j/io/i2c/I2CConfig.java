@@ -38,7 +38,7 @@ public interface I2CConfig extends IOConfig, BusConfig, DeviceConfig {
      * @return a new {@link I2CConfigBuilder} instance
      * @deprecated Please use I2C.newConfigBuilder() instead.
      */
-   @Deprecated
+   @Deprecated(since="5.0")
     static I2CConfigBuilder newBuilder(Context context) {
         return I2CConfigBuilder.newInstance();
     }

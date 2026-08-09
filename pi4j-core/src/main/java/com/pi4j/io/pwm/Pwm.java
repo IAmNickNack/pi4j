@@ -32,7 +32,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return a new, empty PWM configuration builder
      * @deprecated Please use newConfigBuilder() instead.
      */
-    @Deprecated
+    @Deprecated(since="5.0")
     static PwmConfigBuilder newConfigBuilder(Context context) {
         return PwmConfigBuilder.newInstance(context);
     }
