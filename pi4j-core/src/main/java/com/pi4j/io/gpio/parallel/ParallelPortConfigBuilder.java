@@ -10,15 +10,15 @@ import java.util.List;
 
 public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
 
-    private Integer bus;
+    private Integer bus = 0;
     private final List<Integer> bcmPins = new ArrayList<>();
     private Bcm bcm;
-    private Integer onValue;
+    private Integer onValue = 1;
     private ParallelPort.Direction initialDirection = ParallelPort.Direction.INPUT;
-    private Integer initialValue;
-    private Integer shutdownValue;
-    private PullResistance pull;
-    private Long debounce;
+    private Integer initialValue = 0;
+    private Integer shutdownValue = 0;
+    private PullResistance pull = PullResistance.OFF;
+    private Long debounce = 0L;
 
     ParallelPortConfigBuilder bus(Integer bus) {
         this.bus = bus;
