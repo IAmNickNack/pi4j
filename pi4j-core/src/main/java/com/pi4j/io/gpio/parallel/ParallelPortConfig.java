@@ -1,7 +1,7 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.Bcm;
-import com.pi4j.io.gpio.GpioConfig;
+import com.pi4j.io.IOConfig;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.Map;
@@ -21,22 +21,21 @@ import java.util.Map;
  * @param initialDirection the initial direction of the port
  */
 public record ParallelPortConfig(
-    String id,
-    String name,
-    String description,
-    // hardware
-    @Override Integer bus,
-    @Override Bcm bcm,
+    @Override String id,
+    @Override String name,
+    @Override String description,
+    Integer bus,
+    Bcm bcm,
     Integer onValue,
     // input
-    @Override PullResistance pull,
-    @Override Long debounce,
+    PullResistance pull,
+    Long debounce,
     // output
     Integer initialValue,
     Integer shutdownValue,
-    // port-specific
+    // port
     ParallelPort.Direction initialDirection
-) implements GpioConfig {
+) implements IOConfig {
 
     @Override
     public int getUniqueIdentifier() {
