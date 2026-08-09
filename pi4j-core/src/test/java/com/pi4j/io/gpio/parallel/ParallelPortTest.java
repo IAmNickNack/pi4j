@@ -34,7 +34,7 @@ class ParallelPortTest {
          Port using non-sequential pins 1 and 10.
          This supports numeric values 0, 1, 2, 3 (0b00, 0b01, 0b10, 0b11)
         */
-        ParallelPort port = context.create(new ParallelPortConfigBuilder()
+        ParallelPort port = context.create(ParallelPortConfigBuilder.newInstance()
             .bcm(1)
             .bcm(10)
             .build()

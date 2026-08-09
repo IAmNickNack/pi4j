@@ -8,6 +8,9 @@ import com.pi4j.io.impl.IOConfigBuilderBase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Builder for {@link ParallelPortConfig}
+ */
 public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
 
     private Integer bus = 0;
@@ -20,51 +23,101 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
     private PullResistance pull = PullResistance.OFF;
     private Long debounce = 0L;
 
+    /**
+     * Specify the GPIO chip
+     * @param bus the GPIO chip number
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder bus(Integer bus) {
         this.bus = bus;
         return this;
     }
 
-    ParallelPortConfigBuilder bcm(Integer bcm) {
-        bcmPins.add(bcm);
-        return this;
-    }
-
+    /**
+     * Specify the BCM pin mappings
+     * @param bcm the BCM pin mappings
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder bcm(Bcm bcm) {
         this.bcm = bcm;
         return this;
     }
 
+    /**
+     * Add a BCM pin mapping. This can be called multiple times to add multiple BCM pin mappings.
+     * @param bcm the BCM pin mapping
+     * @return this builder instance
+     */
+    ParallelPortConfigBuilder bcm(Integer bcm) {
+        bcmPins.add(bcm);
+        return this;
+    }
+
+    /**
+     * Specify the initial direction
+     * @param initialDirection the initial direction
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder initialDirection(ParallelPort.Direction initialDirection) {
         this.initialDirection = initialDirection;
         return this;
     }
 
+    /**
+     * Specify the value interpreted as `on`.
+     * TODO: check if this is necessary / relevant
+     * @param onValue the on value
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder onValue(Integer onValue) {
         this.onValue = onValue;
         return this;
     }
 
+    /**
+     * Specify the initial value when the port is intialised as OUTPUT
+     * @param initialValue the initial value
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder initialValue(Integer initialValue) {
         this.initialValue = initialValue;
         return this;
     }
 
+    /**
+     * Specify the value to be applied on shutdown when the port is intialised as OUTPUT
+     * @param shutdownValue the shutdown value
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder shutdownValue(Integer shutdownValue) {
         this.shutdownValue = shutdownValue;
         return this;
     }
 
+    /**
+     * Specify the pull resistance when the port is intialised as INPUT
+     * @param pull the pull resistance
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder pull(PullResistance pull) {
         this.pull = pull;
         return this;
     }
 
+    /**
+     * Specify the debounce time when the port is intialised as INPUT
+     * @param debounce the debounce time
+     * @return this builder instance
+     */
     ParallelPortConfigBuilder debounce(Long debounce) {
         this.debounce = debounce;
         return this;
     }
 
+    /**
+     * Construct the {@link ParallelPortConfig} instance
+     * @return the constructed {@link ParallelPortConfig} instance
+     */
     @Override
     public ParallelPortConfig build() {
         if (bcmPins.isEmpty() || bcm == null) {
@@ -86,5 +139,13 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
             this.shutdownValue,
             this.initialDirection
         );
+    }
+
+    /**
+     * Provided mainly for compatibility. A constructor with the same signature as other config builders
+     * @return a new builder instance
+     */
+    static ParallelPortConfigBuilder newInstance() {
+        return new ParallelPortConfigBuilder();
     }
 }
