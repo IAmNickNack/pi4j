@@ -28,7 +28,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param bus the GPIO chip number
      * @return this builder instance
      */
-    ParallelPortConfigBuilder bus(Integer bus) {
+    public ParallelPortConfigBuilder bus(Integer bus) {
         this.bus = bus;
         return this;
     }
@@ -38,7 +38,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param bcm the BCM pin mappings
      * @return this builder instance
      */
-    ParallelPortConfigBuilder bcm(Bcm bcm) {
+    public ParallelPortConfigBuilder bcm(Bcm bcm) {
         this.bcm = bcm;
         return this;
     }
@@ -48,7 +48,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param bcm the BCM pin mapping
      * @return this builder instance
      */
-    ParallelPortConfigBuilder bcm(Integer bcm) {
+    public ParallelPortConfigBuilder bcm(Integer bcm) {
         bcmPins.add(bcm);
         return this;
     }
@@ -58,7 +58,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param initialDirection the initial direction
      * @return this builder instance
      */
-    ParallelPortConfigBuilder initialDirection(ParallelPort.Direction initialDirection) {
+    public ParallelPortConfigBuilder initialDirection(ParallelPort.Direction initialDirection) {
         this.initialDirection = initialDirection;
         return this;
     }
@@ -69,7 +69,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param onValue the on value
      * @return this builder instance
      */
-    ParallelPortConfigBuilder onValue(Integer onValue) {
+    public ParallelPortConfigBuilder onValue(Integer onValue) {
         this.onValue = onValue;
         return this;
     }
@@ -79,7 +79,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param initialValue the initial value
      * @return this builder instance
      */
-    ParallelPortConfigBuilder initialValue(Integer initialValue) {
+    public ParallelPortConfigBuilder initialValue(Integer initialValue) {
         this.initialValue = initialValue;
         return this;
     }
@@ -89,7 +89,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param shutdownValue the shutdown value
      * @return this builder instance
      */
-    ParallelPortConfigBuilder shutdownValue(Integer shutdownValue) {
+    public ParallelPortConfigBuilder shutdownValue(Integer shutdownValue) {
         this.shutdownValue = shutdownValue;
         return this;
     }
@@ -99,7 +99,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param pull the pull resistance
      * @return this builder instance
      */
-    ParallelPortConfigBuilder pull(PullResistance pull) {
+    public ParallelPortConfigBuilder pull(PullResistance pull) {
         this.pull = pull;
         return this;
     }
@@ -109,7 +109,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param debounce the debounce time
      * @return this builder instance
      */
-    ParallelPortConfigBuilder debounce(Long debounce) {
+    public ParallelPortConfigBuilder debounce(Long debounce) {
         this.debounce = debounce;
         return this;
     }
@@ -145,7 +145,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * Provided mainly for compatibility. A constructor with the same signature as other config builders
      * @return a new builder instance
      */
-    static ParallelPortConfigBuilder newInstance() {
+    public static ParallelPortConfigBuilder newInstance() {
         return new ParallelPortConfigBuilder();
     }
 }
