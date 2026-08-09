@@ -38,6 +38,11 @@ public record ParallelPortConfig(
 ) implements IOConfig {
 
     @Override
+    public int getUniqueIdentifier() {
+        return bcm.intMask();
+    }
+
+    @Override
     public String provider() {
         // TODO: question if this is needed. I think this is only required for name-based component scan
         //  (which is likely redundant)
