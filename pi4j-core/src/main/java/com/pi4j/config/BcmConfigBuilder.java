@@ -1,5 +1,7 @@
 package com.pi4j.config;
 
+import com.pi4j.io.Bcm;
+
 /**
  * Builder contract for assembling a {@link BcmConfig}, i.e. the configuration of an I/O that is
  * addressed by a Broadcom (BCM) GPIO pin number.
@@ -25,5 +27,13 @@ public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuild
      * @param bcm the BCM GPIO pin number
      * @return this builder instance for method chaining
      */
-    BUILDER_TYPE bcm(Integer bcm);
+    default BUILDER_TYPE bcm(Integer bcm) {
+        return bcm(Bcm.fromOffset(bcm));
+    }
+
+    default BUILDER_TYPE bcm(int...bcm) {
+        return bcm(Bcm.fromOffsets(bcm));
+    }
+    
+    BUILDER_TYPE bcm(Bcm bcm);
 }

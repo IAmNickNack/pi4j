@@ -87,8 +87,8 @@ class RegistryTest {
             // Test that we can find them by address
             () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.config().getUniqueIdentifier()), "Should exist: Digital Input by unique identifier which should be identical to BCM"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.config().getUniqueIdentifier()), "Should exist: Digital Output by unique identifier which should be identical to BCM"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by BCM"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by BCM"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm().intMask()), "Should exist: Digital Input by BCM"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm().intMask()), "Should exist: Digital Output by BCM"),
 
             // and also by ID
             () -> assertTrue(registry.exists(input.id()), "Should exist: Digital Input by ID"),
@@ -107,8 +107,8 @@ class RegistryTest {
         assertAll(
             // and now we shouldn't find them by address
             // TO FIX () -> assertFalse(registry.exists(IOType.PWM, 3), "Should not exist: PWM by address"),
-            () -> assertFalse(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should not exist: Digital Input by pin"),
-            () -> assertFalse(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should not exist: Digital Output by pin"),
+            () -> assertFalse(registry.exists(IOType.DIGITAL_INPUT, input.bcm().intMask()), "Should not exist: Digital Input by pin"),
+            () -> assertFalse(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm().intMask()), "Should not exist: Digital Output by pin"),
             () -> assertFalse(registry.exists(IOType.PWM, pwm.config().getUniqueIdentifier()), "Should not exist: PWM by unique identifier"),
             () -> assertFalse(registry.exists(IOType.I2C, i2c.config().getUniqueIdentifier()), "Should not exist: I2C by unique identifier"),
 
