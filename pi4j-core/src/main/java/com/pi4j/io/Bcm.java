@@ -89,6 +89,19 @@ public record Bcm(
     }
 
     /**
+     * Packs the offsets into a long value. Has the effect of generating a mask with `offsets.length` bits set, where
+     * all bits set to 1. E.g. The mask `1101` representing pins 0, 2, and 3 becomes `111`.
+     * @return a packed representation of the pin configuration
+     */
+    public long pack() {
+        long out = 0;
+        for (int i = 0; i < offsets.length; i++) {
+            out |= 1L << i;
+        }
+        return out;
+    }
+
+    /**
      * Equality check which avoids comparing the offsets array.
      * @param obj the reference object with which to compare.
      * @return true if the masks are equal, false otherwise.

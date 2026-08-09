@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.providers.gpio;
+package com.pi4j.plugin.ffm.common;
 
 import com.pi4j.io.Bcm;
 import com.pi4j.exception.InitializeException;
@@ -10,6 +10,9 @@ import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInput;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutput;
+import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,31 +25,35 @@ import java.util.List;
 
 /**
  * Low-level wrapper around a single Linux GPIO v2 character-device line. Shared by
- * {@link FFMDigitalInput} and {@link FFMDigitalOutput} to eliminate duplicated native code.
+ * {@link FFMDigitalInput}, {@link FFMDigitalOutput} and {@link FFMParallelPort} to eliminate duplicated native code.
  * <p>
  * A line is opened via {@link #openAndRequest} (which issues the {@code GPIO_V2_GET_LINE_IOCTL}
  * and retains the resulting per-request file descriptor), read via {@link #readValue()}, written
  * via {@link #writeValue(int)}, and released via {@link #close}.
  */
-class FFMGpioLine {
+public class FFMGpioLine {
     private static final Logger logger = LoggerFactory.getLogger(FFMGpioLine.class);
 
-    final IoctlNative ioctl = new IoctlNative();
-    final FileDescriptorNative file = new FileDescriptorNative();
+    public final IoctlNative ioctl = new IoctlNative();
+    public final FileDescriptorNative file = new FileDescriptorNative();
 
-    final String deviceName;
-    final Bcm bcm;
+    public final String deviceName;
+    public final Bcm bcm;
 
-    int chipFileDescriptor;
-    boolean closed = false;
+    private int chipFileDescriptor;
+    private boolean closed = false;
 
-    FFMGpioLine(Bcm bcm, int bus) {
+    public FFMGpioLine(Bcm bcm, int bus) {
         this.bcm = bcm;
         this.deviceName = "/dev/gpiochip" + bus;
     }
 
-    FFMGpioLine(long mask, int bus) {
+    public FFMGpioLine(long mask, int bus) {
         this(Bcm.fromMask(mask), bus);
+    }
+
+    public int getChipFileDescriptor() {
+        return chipFileDescriptor;
     }
 
     /**
@@ -59,7 +66,7 @@ class FFMGpioLine {
      * @throws InitializeException if the device is inaccessible, the line is in use, or an
      *                             ioctl / file-open call fails
      */
-    void openAndRequest(long flags, List<LineConfigAttribute> attributes, String consumer)
+    public void openAndRequest(long flags, List<LineConfigAttribute> attributes, String consumer)
         throws InitializeException {
         if (!canAccessDevice()) {
             try {
@@ -114,7 +121,7 @@ class FFMGpioLine {
      * @return the current {@link DigitalState}
      * @throws Pi4JException if the line is closed or the ioctl call fails
      */
-    int readValue() {
+    public int readValue() {
         checkClosed();
         logger.trace("{}-{} - reading GPIO offset.", deviceName, bcm);
         var lineValues = new LineValues(0, Long.MAX_VALUE);
@@ -133,7 +140,7 @@ class FFMGpioLine {
      * @param value the desired numeric value
      * @throws Pi4JException if the line is closed or the ioctl call fails
      */
-    void writeValue(int value) {
+    public void writeValue(int value) {
         checkClosed();
         logger.trace("{}-{} - writing GPIO offset {}.", deviceName, bcm, value);
         var lineValues = new LineValues(value, Long.MAX_VALUE);
@@ -144,10 +151,20 @@ class FFMGpioLine {
         }
     }
 
+    public void reconfigure(LineConfig config) {
+        checkClosed();
+        logger.trace("{}-{} - reconfiguring GPIO offset.", deviceName, bcm);
+        try {
+            ioctl.call(chipFileDescriptor, Command.getGpioV2LineSetConfigIoctl(), config);
+        } catch (Exception e) {
+            throw new Pi4JException(e);
+        }
+    }
+
     /**
      * Closes the per-request line file descriptor, releasing the GPIO line back to the kernel.
      */
-    void close() {
+    public void close() {
         if (chipFileDescriptor > 0) {
             logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, bcm, chipFileDescriptor);
             file.close(chipFileDescriptor);
