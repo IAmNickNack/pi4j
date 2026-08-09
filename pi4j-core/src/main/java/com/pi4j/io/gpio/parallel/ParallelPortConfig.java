@@ -21,9 +21,9 @@ import java.util.Map;
  * @param initialDirection the initial direction of the port
  */
 public record ParallelPortConfig(
-    String id,
-    String name,
-    String description,
+    @Override String id,
+    @Override String name,
+    @Override String description,
     // hardware
     @Override Integer bus,
     @Override Bcm bcm,
