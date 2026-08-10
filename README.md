@@ -42,7 +42,7 @@ For example, for a minimal example to blink a LED ([fully explained here](https:
 ```java
 var pi4j = Pi4J.newAutoContext();
 
-var led = pi4j.digitalOutput().create(PIN_LED);
+var led = pi4j.create(PIN_LED);
 
 while (true) {
   if (led.state() == DigitalState.HIGH) {

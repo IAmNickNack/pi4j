@@ -64,7 +64,7 @@ public class SpiRawDataTest {
             .build();
 
         // use try-with-resources to auto-close SPI when complete
-        try (var spi = pi4j.spi().create(config)) {
+        try (var spi = pi4j.create(config)) {
 
             // ensure that the SPI instance is not null;
             assertNotNull(spi);
@@ -118,7 +118,7 @@ public class SpiRawDataTest {
             .build();
 
         // use try-with-resources to auto-close SPI when complete
-        try (var spi = pi4j.spi().create(config)) {
+        try (var spi = pi4j.create(config)) {
 
             // write sample data using output stream
             spi.out().write(sample);

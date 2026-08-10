@@ -33,7 +33,7 @@ public class PWMPerformanceTest extends BaseSetup {
             .chip(0)
             .channel(0)
             .build();
-        this.pwm = pi4j.pwm().create(config);
+        this.pwm = pi4j.create(config);
     }
 
     @TearDown

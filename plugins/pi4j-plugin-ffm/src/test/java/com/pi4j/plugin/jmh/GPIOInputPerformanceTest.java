@@ -34,7 +34,7 @@ public class GPIOInputPerformanceTest extends BaseSetup {
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
-        this.pin = pi4j.digitalInput().create(config);
+        this.pin = pi4j.create(config);
     }
 
     @TearDown(Level.Trial)

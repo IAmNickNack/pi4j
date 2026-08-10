@@ -95,6 +95,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
         }
 
         // use default digital output provider
-        return context.dout().create(config);
+        return context.create(config);
     }
 }

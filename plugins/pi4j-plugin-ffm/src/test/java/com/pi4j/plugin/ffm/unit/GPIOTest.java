@@ -83,7 +83,7 @@ public class GPIOTest {
 
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(99).build();
-            assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(builder));
+            assertThrows(IllegalStateException.class, () -> pi4j1.create(builder));
         }
     }
 
@@ -97,7 +97,7 @@ public class GPIOTest {
 
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(0).build();
-            assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(builder));
+            assertThrows(IllegalStateException.class, () -> pi4jNonExistent.create(builder));
         }
     }
 
@@ -115,7 +115,7 @@ public class GPIOTest {
 
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(0).build();
-            var pin = pi4j0.digitalInput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(0, pin.bcm());
         }
     }
@@ -134,7 +134,7 @@ public class GPIOTest {
 
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(1).build();
-            var pin = pi4j0.digitalInput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(DigitalState.LOW, pin.state());
         }
     }
@@ -178,7 +178,7 @@ public class GPIOTest {
                 .bcm(7)
                 .debounce(0L)
                 .build();
-            var pin = pi4j0.digitalInput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);
             pin.addListener(event -> {
@@ -235,7 +235,7 @@ public class GPIOTest {
                 .bcm(17)
                 .debounce(0L)
                 .build();
-            var pin = pi4j0.digitalInput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);
             pin.addListener(event -> {
@@ -294,7 +294,7 @@ public class GPIOTest {
                 .bcm(8)
                 .debounce(50L) // 50ms debounce
                 .build();
-            var pin = pi4j0.digitalInput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);
             pin.addListener(event -> {
@@ -321,7 +321,7 @@ public class GPIOTest {
 
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(2).build();
-            assertThrows(IllegalStateException.class, () -> pi4j0.digitalInput().create(builder));
+            assertThrows(IllegalStateException.class, () -> pi4j0.create(builder));
         }
     }
 
@@ -343,7 +343,7 @@ public class GPIOTest {
                 .debounce(99L, TimeUnit.MICROSECONDS)
                 .pull(PullResistance.PULL_DOWN)
                 .build();
-            var pin = pi4j0.digitalInput().create(config);
+            var pin = pi4j0.create(config);
             assertEquals(99, pin.config().debounce());
             assertEquals(3, pin.bcm());
             assertEquals(PullResistance.PULL_DOWN, pin.pull());
@@ -366,7 +366,7 @@ public class GPIOTest {
                 .bus(-1)
                 .bcm(4)
                 .build();
-            var pin = pi4j0.digitalOutput().create(builder);
+            var pin = pi4j0.create(builder);
             assertEquals(4, pin.bcm());
         }
     }
@@ -387,7 +387,7 @@ public class GPIOTest {
                 .bus(-1)
                 .bcm(5)
                 .build();
-            var pin = pi4j0.digitalOutput().create(builder);
+            var pin = pi4j0.create(builder);
             pin.state(DigitalState.HIGH);
             assertEquals(DigitalState.HIGH, pin.state());
             pin.state(DigitalState.LOW);
@@ -419,7 +419,7 @@ public class GPIOTest {
                 .bcm(9)
                 .initial(DigitalState.HIGH)
                 .build();
-            var pin = pi4j0.digitalOutput().create(builder);
+            var pin = pi4j0.create(builder);
 
             assertEquals(DigitalState.HIGH, pin.state());
 
@@ -459,7 +459,7 @@ public class GPIOTest {
                 .bcm(10)
                 .initial(DigitalState.LOW)
                 .build();
-            var pin = pi4j0.digitalOutput().create(builder);
+            var pin = pi4j0.create(builder);
 
             assertEquals(DigitalState.LOW, pin.state());
 
@@ -497,7 +497,7 @@ public class GPIOTest {
                 .bus(-1)
                 .bcm(11)
                 .build();
-            pi4j0.digitalOutput().create(builder);
+            pi4j0.create(builder);
 
             var request = capturedRequest.get();
             assertNotNull(request, "LineRequest was not sent to the kernel");
@@ -610,7 +610,7 @@ public class GPIOTest {
                     .bcm(20 + i)
                     .debounce(0L)
                     .build();
-                var pin = pi4j0.digitalInput().create(builder);
+                var pin = pi4j0.create(builder);
                 final int pinIndex = i;
                 pin.addListener(event -> {
                     if (event.state() == DigitalState.HIGH && pinReceivedEvent[pinIndex].compareAndSet(false, true)) {
