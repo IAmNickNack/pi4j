@@ -68,6 +68,17 @@ public record FFMGpioLineMask(
         return mask == that.mask;
     }
 
+    /**
+     * Returns the hash code of the mask.
+     * <p>
+     * {@link mask} is already a numeric representation of {@link offsets}. Hashing the array again is unnecessary.
+     * @return the hash code of the mask.
+     */
+    @Override
+    public int hashCode() {
+        return Long.hashCode(mask);
+    }
+
     @Override
     public String toString() {
         return "FFMGpioLineMask{" +
