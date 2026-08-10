@@ -33,7 +33,7 @@ public class GPIOOutputPerformanceTest extends BaseSetup {
             .bus(97)
             .bcm(5)
             .build();
-        this.pin = pi4j.digitalOutput().create(config);
+        this.pin = pi4j.create(config);
     }
 
     @TearDown

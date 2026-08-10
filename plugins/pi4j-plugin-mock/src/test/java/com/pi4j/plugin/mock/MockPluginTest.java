@@ -42,7 +42,7 @@ class MockPluginTest {
             .channel(0)
             .build();
 
-        var device = pi4j.pwm().create(config);
+        var device = pi4j.create(config);
         assertNotNull(device);
 
         pi4j.shutdown(device.id());

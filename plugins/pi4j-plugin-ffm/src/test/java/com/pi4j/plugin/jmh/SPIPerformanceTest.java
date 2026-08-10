@@ -38,7 +38,7 @@ public class SPIPerformanceTest extends BaseSetup {
             .mode(0)
             .baud(50_000)
             .build();
-        this.spi = pi4j.spi().create(config);
+        this.spi = pi4j.create(config);
     }
 
     @TearDown
