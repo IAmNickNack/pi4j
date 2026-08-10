@@ -1,8 +1,5 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
-import com.pi4j.context.Context;
-import com.pi4j.exception.InitializeException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
@@ -36,23 +33,11 @@ public class FFMDigitalOutputProviderImpl extends DigitalOutputProviderBase impl
      */
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        var digitalOutput = new FFMDigitalOutput( this, config);
-        this.context.register(digitalOutput);
-        return digitalOutput;
+        return new FFMDigitalOutput( this, config);
     }
 
     @Override
     public int getPriority() {
         return 200;
-    }
-
-    @Override
-    public DigitalOutputProvider initialize(Context context) throws InitializeException {
-        return super.initialize(context);
-    }
-
-    @Override
-    public DigitalOutputProvider shutdownInternal(Context context) throws ShutdownException {
-        return super.shutdownInternal(context);
     }
 }

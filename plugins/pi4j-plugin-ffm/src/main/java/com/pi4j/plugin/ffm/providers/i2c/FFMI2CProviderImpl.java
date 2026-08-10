@@ -70,7 +70,6 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
             i2c = new I2CFile(this, config, bus);
         }
 
-        this.context.register(i2c);
         return i2c;
     }
 }

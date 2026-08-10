@@ -1,8 +1,5 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
-import com.pi4j.context.Context;
-import com.pi4j.exception.InitializeException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
@@ -35,23 +32,11 @@ public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implem
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        var digitalInput = new FFMDigitalInput(this, config);
-        this.context.register(digitalInput);
-        return digitalInput;
+        return new FFMDigitalInput(this, config);
     }
 
     @Override
     public int getPriority() {
         return 200;
-    }
-
-    @Override
-    public DigitalInputProvider initialize(Context context) throws InitializeException {
-        return super.initialize(context);
-    }
-
-    @Override
-    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
-        return super.shutdownInternal(context);
     }
 }

@@ -31,13 +31,10 @@ public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvi
     /**
      * {@inheritDoc}
      * <p>
-     * Creates a new {@link MockSpi} instance that simulates the SPI device in memory and registers
-     * it with the Pi4J context.
+     * Creates a new {@link MockSpi} instance that simulates the SPI device in memory.
      */
     @Override
     public Spi create(SpiConfig config) {
-        MockSpi spi = new MockSpi(this, config);
-        this.context.register(spi);
-        return spi;
+        return new MockSpi(this, config);
     }
 }

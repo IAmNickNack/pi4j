@@ -32,13 +32,10 @@ public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvi
     /**
      * {@inheritDoc}
      * <p>
-     * Creates a new {@link MockPwm} instance that simulates the channel in memory and registers
-     * it with the Pi4J context.
+     * Creates a new {@link MockPwm} instance that simulates the channel in memory.
      */
     @Override
     public Pwm create(PwmConfig config) {
-        MockPwm pwm = new MockPwm(this, config);
-        this.context.register(pwm);
-        return pwm;
+        return new MockPwm(this, config);
     }
 }

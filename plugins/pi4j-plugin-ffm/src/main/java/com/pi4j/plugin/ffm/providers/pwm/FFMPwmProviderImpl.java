@@ -59,8 +59,6 @@ public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
         }
 
         // create new I/O instance based on I/O config
-        var pwm = new FFMPwmHardware(this, config);
-        this.context.register(pwm);
-        return pwm;
+        return new FFMPwmHardware(this, config);
     }
 }

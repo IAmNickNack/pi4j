@@ -43,8 +43,6 @@ public class FFMSpiProviderImpl extends SpiProviderBase implements SpiProvider {
     @Override
     public Spi create(SpiConfig config) {
         // create new I/O instance based on I/O config
-        var spi = new FFMSpi(this, config);
-        this.context.register(spi);
-        return spi;
+        return new FFMSpi(this, config);
     }
 }
