@@ -37,7 +37,7 @@ public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
      * is ignored (with a warning) because hardware PWM is addressed by chip and channel.
      *
      * @param config the PWM configuration; must specify {@link PwmType#HARDWARE}, a chip and a channel
-     * @return the newly created and registered hardware PWM instance
+     * @return the newly created hardware PWM instance
      * @throws IOException              if the configuration requests a non-hardware PWM type
      * @throws IllegalArgumentException if the chip or channel is missing from the configuration
      */
@@ -59,8 +59,6 @@ public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
         }
 
         // create new I/O instance based on I/O config
-        var pwm = new FFMPwmHardware(this, config);
-        this.context.register(pwm);
-        return pwm;
+        return new FFMPwmHardware(this, config);
     }
 }

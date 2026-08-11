@@ -31,13 +31,10 @@ public class MockI2CProviderImpl extends I2CProviderBase implements MockI2CProvi
     /**
      * {@inheritDoc}
      * <p>
-     * Creates a new {@link MockI2C} instance that simulates the device in memory and registers
-     * it with the Pi4J context.
+     * Creates a new {@link MockI2C} instance that simulates the device in memory.
      */
     @Override
     public I2C create(I2CConfig config) {
-        MockI2C i2C = new MockI2C(this, config);
-        this.context.register(i2C);
-        return i2C;
+        return new MockI2C(this, config);
     }
 }

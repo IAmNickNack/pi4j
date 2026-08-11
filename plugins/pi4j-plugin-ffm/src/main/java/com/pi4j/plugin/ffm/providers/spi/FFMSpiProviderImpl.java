@@ -38,13 +38,11 @@ public class FFMSpiProviderImpl extends SpiProviderBase implements SpiProvider {
      * configuration.
      *
      * @param config the SPI configuration carrying the bus, channel, mode and baud rate
-     * @return the newly created and registered SPI instance
+     * @return the newly created SPI instance
      */
     @Override
     public Spi create(SpiConfig config) {
         // create new I/O instance based on I/O config
-        var spi = new FFMSpi(this, config);
-        this.context.register(spi);
-        return spi;
+        return new FFMSpi(this, config);
     }
 }

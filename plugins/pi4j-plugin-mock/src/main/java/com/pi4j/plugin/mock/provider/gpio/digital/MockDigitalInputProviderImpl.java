@@ -33,13 +33,10 @@ public class MockDigitalInputProviderImpl extends DigitalInputProviderBase imple
     /**
      * {@inheritDoc}
      * <p>
-     * Creates a {@link MockDigitalInput} that simulates the pin in memory and registers it
-     * with the Pi4J context.
+     * Creates a {@link MockDigitalInput} that simulates the pin in memory.
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        MockDigitalInput input = new MockDigitalInput(this, config);
-        this.context.register(input);
-        return input;
+        return new MockDigitalInput(this, config);
     }
 }

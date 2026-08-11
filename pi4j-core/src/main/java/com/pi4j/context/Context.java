@@ -222,14 +222,16 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // I/O INSTANCE ACCESSOR/CREATOR METHODS
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     default <I extends IO<?, ?, ?>> I create(IOConfig config, IOType ioType) {
+        I device = null;
         // create by explicitly configured IO <PROVIDER> from IO config
         String providerId = config.provider();
         if (StringUtil.isNotNullOrEmpty(providerId)) {
             // resolve the provider and use it to create the IO instance
             Provider provider = this.providers().get(providerId, ioType);
-            return (I) provider.create(config);
+            device = (I) provider.create(config);
         }
 
         // get implicitly defined provider (defined by IO type)
@@ -237,7 +239,12 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         if (ioType != null) {
             // resolve the provider and use it to create the IO instance
             Provider provider = this.provider(ioType);
-            return (I) provider.create(config);
+            device = (I) provider.create(config);
+        }
+
+        if (device != null) {
+            register(device);
+            return device;
         }
 
         // unable to resolve the IO type and thus unable to create I/O instance
