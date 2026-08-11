@@ -67,6 +67,6 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
                 throw new ShutdownException(e);
             }
         }
-        return this;
+        return super.shutdownInternal(context);
     }
 }
