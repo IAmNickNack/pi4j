@@ -13,9 +13,6 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /** Tracks whether this SPI device is currently open; managed by {@link #open()} and {@link #close()}. */
-    protected boolean isOpen = false;
-
     /**
      * Creates a new SPI device instance bound to the given provider and configuration.
      *
@@ -27,19 +24,7 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
     }
 
     @Override
-    public boolean isOpen() {
-        return this.isOpen;
-    }
-
-    @Override
     public void open() {
         logger.trace("invoked 'open()'");
-    }
-
-    @Override
-    public void close() {
-        logger.trace("invoked 'closed()'");
-        super.close();
-        this.isOpen = false;
     }
 }
