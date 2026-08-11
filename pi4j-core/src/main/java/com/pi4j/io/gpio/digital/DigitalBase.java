@@ -95,7 +95,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         stateChangeEventManager.clear();
 
         // return this instance
-        return (DIGITAL_TYPE) this;
+        return super.shutdownInternal(context);
     }
 
     @Override

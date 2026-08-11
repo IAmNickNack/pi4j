@@ -1,5 +1,6 @@
 package com.pi4j.plugin.mock.provider.spi;
 
+import com.pi4j.context.Context;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -61,9 +62,9 @@ public class MockSpi extends SpiBase implements Spi {
     }
 
     @Override
-    public void close() {
+    public Spi shutdownInternal(Context context) {
         logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
-        super.close();
+        return super.shutdownInternal(context);
     }
 
     /**
