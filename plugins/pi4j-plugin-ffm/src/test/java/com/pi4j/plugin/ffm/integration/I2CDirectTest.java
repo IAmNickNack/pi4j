@@ -29,8 +29,7 @@ public class I2CDirectTest extends BaseSetup {
         pi4j = Pi4J.newContextBuilder()
             .add(new FFMI2CProviderImpl())
             .build();
-        i2c = pi4j.i2c()
-            .create(I2CConfigBuilder.newInstance()
+        i2c = pi4j.create(I2CConfigBuilder.newInstance()
                 .bus(99)
                 .device(0x1C)
                 .i2cImplementation(I2CImplementation.DIRECT));
