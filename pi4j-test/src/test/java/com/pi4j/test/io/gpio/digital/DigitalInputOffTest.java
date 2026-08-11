@@ -49,7 +49,7 @@ public class DigitalInputOffTest {
             .build();
 
         // create GPIO digital input instance
-        var input = pi4j.din().create(config);
+        var input = pi4j.create(config);
 
         // set MOCK state to LOW
         MockDigitalInput mockInput = (MockDigitalInput) input;
@@ -72,7 +72,7 @@ public class DigitalInputOffTest {
             .build();
 
         // create GPIO digital input instance
-        var input = pi4j.din().create(config);
+        var input = pi4j.create(config);
 
         // set MOCK state to LOW
         MockDigitalInput mockInput = (MockDigitalInput) input;
@@ -95,7 +95,7 @@ public class DigitalInputOffTest {
             .build();
 
         // create GPIO digital input instance
-        var input = pi4j.din().create(config);
+        var input = pi4j.create(config);
 
         // set MOCK state to HIGH
         MockDigitalInput mockInput = (MockDigitalInput) input;

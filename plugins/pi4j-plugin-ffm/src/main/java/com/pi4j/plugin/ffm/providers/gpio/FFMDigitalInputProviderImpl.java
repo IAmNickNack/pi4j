@@ -1,8 +1,5 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
-import com.pi4j.context.Context;
-import com.pi4j.exception.InitializeException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
@@ -30,28 +27,15 @@ public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implem
      * {@inheritDoc}
      * <p>
      * Resolves the GPIO chip name from the {@code gpio.chip.name} context property (defaulting to
-     * {@code "unknown"}), constructs an {@link FFMDigitalInput} for the requested line, and registers
-     * it with the context.
+     * {@code "unknown"}), constructs an {@link FFMDigitalInput} for the requested line.
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        var digitalInput = new FFMDigitalInput(this, config);
-        this.context.register(digitalInput);
-        return digitalInput;
+        return new FFMDigitalInput(this, config);
     }
 
     @Override
     public int getPriority() {
         return 200;
-    }
-
-    @Override
-    public DigitalInputProvider initialize(Context context) throws InitializeException {
-        return super.initialize(context);
-    }
-
-    @Override
-    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
-        return super.shutdownInternal(context);
     }
 }

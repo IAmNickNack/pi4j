@@ -31,7 +31,7 @@ public class I2CSMBusPerformanceTest extends BaseSetup {
         this.pi4j = Pi4J.newContextBuilder()
             .add(new FFMI2CProviderImpl())
             .build();
-        this.i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance()
+        this.i2c = pi4j.create(I2CConfigBuilder.newInstance()
             .bus(99)
             .device(0x1C)
             .i2cImplementation(I2CImplementation.SMBUS));

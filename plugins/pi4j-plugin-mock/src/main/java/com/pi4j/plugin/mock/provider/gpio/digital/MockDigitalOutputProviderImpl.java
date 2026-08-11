@@ -33,13 +33,10 @@ public class MockDigitalOutputProviderImpl extends DigitalOutputProviderBase imp
     /**
      * {@inheritDoc}
      * <p>
-     * Creates a {@link MockDigitalOutput} that simulates the pin in memory and registers it
-     * with the Pi4J context.
+     * Creates a {@link MockDigitalOutput} that simulates the pin in memory.
      */
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        MockDigitalOutput output = new MockDigitalOutput(this, config);
-        this.context.register(output);
-        return output;
+        return new MockDigitalOutput(this, config);
     }
 }

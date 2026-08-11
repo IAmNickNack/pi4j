@@ -103,7 +103,7 @@ public class I2CRegisterDataTest {
             .build();
 
         // use try-with-resources to auto-close I2C when complete
-        try (var i2c = pi4j.i2c().create(config)) {
+        try (var i2c = pi4j.create(config)) {
 
             // ensure that the I2C instance is not null;
             assertNotNull(i2c);

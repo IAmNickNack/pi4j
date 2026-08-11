@@ -47,7 +47,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to LOW
         output.low();
@@ -72,7 +72,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to LOW
         output.low();
@@ -97,7 +97,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to HIGH
         output.high();
@@ -121,7 +121,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to OFF
         output.off();
@@ -146,7 +146,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to OFF
         output.off();
@@ -171,7 +171,7 @@ public class DigitalOutputOffTest {
             .build();
 
         // create GPIO digital output instance
-        var output = pi4j.dout().create(config);
+        var output = pi4j.create(config);
 
         // set output to OFF
         output.off();

@@ -39,7 +39,7 @@ public class SPITest extends BaseSetup {
             .mode(0)
             .baud(50_000)
             .build();
-        spi = pi4j.spi().create(config);
+        spi = pi4j.create(config);
     }
 
     @AfterAll

@@ -34,7 +34,7 @@ public class PwmTest extends BaseSetup {
         pi4j = Pi4J.newContextBuilder()
             .add(new FFMPwmProviderImpl())
             .build();
-        pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
+        pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
             .pwmType(PwmType.HARDWARE)
             .chip(findMockPwmChip())
             .channel(0)
