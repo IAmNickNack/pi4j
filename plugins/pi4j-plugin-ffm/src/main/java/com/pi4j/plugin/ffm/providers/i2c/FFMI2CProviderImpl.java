@@ -38,8 +38,7 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
      * <p>
      * Opens the {@link FFMI2CBus} for the configured bus, then chooses the access implementation: the
      * configured {@link I2CImplementation} is honoured when the adapter actually supports it
-     * (SMBus or direct), otherwise it falls back to the plain file-based implementation. The created
-     * device is registered with the context.
+     * (SMBus or direct), otherwise it falls back to the plain file-based implementation
      */
     @Override
     public I2C create(I2CConfig config) {

@@ -28,8 +28,7 @@ public class FFMDigitalOutputProviderImpl extends DigitalOutputProviderBase impl
      * {@inheritDoc}
      * <p>
      * Resolves the GPIO chip name from the {@code gpio.chip.name} context property (defaulting to
-     * {@code "unknown"}), constructs an {@link FFMDigitalOutput} for the requested line, and registers
-     * it with the context.
+     * {@code "unknown"}), constructs an {@link FFMDigitalOutput} for the requested line.
      */
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {

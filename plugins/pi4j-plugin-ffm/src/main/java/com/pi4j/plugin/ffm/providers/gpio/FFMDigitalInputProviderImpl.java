@@ -27,8 +27,7 @@ public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implem
      * {@inheritDoc}
      * <p>
      * Resolves the GPIO chip name from the {@code gpio.chip.name} context property (defaulting to
-     * {@code "unknown"}), constructs an {@link FFMDigitalInput} for the requested line, and registers
-     * it with the context.
+     * {@code "unknown"}), constructs an {@link FFMDigitalInput} for the requested line.
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {

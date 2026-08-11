@@ -38,7 +38,7 @@ public class FFMSpiProviderImpl extends SpiProviderBase implements SpiProvider {
      * configuration.
      *
      * @param config the SPI configuration carrying the bus, channel, mode and baud rate
-     * @return the newly created and registered SPI instance
+     * @return the newly created SPI instance
      */
     @Override
     public Spi create(SpiConfig config) {
