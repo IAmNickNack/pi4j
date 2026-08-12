@@ -31,6 +31,9 @@ public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_T
     @Override
     void close();
 
+    /** True if the device hasn't been closed. */
+    boolean isOpen();
+
     /**
      * Returns the configuration this I/O instance was created from.
      *

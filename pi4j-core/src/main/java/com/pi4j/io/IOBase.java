@@ -64,7 +64,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     /**
      * Closes the driver by calling this.context().shutdown(this.getId()), which in turn calls
-     * the local shutdown() method here via DefaultRuntimeRegistry.remove().
+     * the local shutdownInternal(context) method here via DefaultRuntimeRegistry.remove().
      * <p>
      * Basically, for Pi4J, this constitutes an idempotent user convenience method for
      * this.context().shutdown(this.getId())
@@ -73,13 +73,17 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
      * behaviour. Behaviour added here will not be triggered by context.shutdown()
      */
     @Override
-    public void close() {
+    public final void close() {
         // The null check accounts for contextless tests or somehow just closing without initializing
         // The closed check ensures idempotency, as required by the close method contract.
         if (this.context != null && !closed) {
-            this.closed = true;
             this.context.shutdown(getId());
         }
+    }
+
+    @Override
+    public final boolean isOpen() {
+        return !closed;
     }
 
     @Override

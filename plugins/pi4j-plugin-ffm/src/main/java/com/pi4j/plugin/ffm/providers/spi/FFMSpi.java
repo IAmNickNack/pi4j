@@ -115,7 +115,6 @@ public class FFMSpi extends SpiBase implements Spi {
         this.bufferSize = readBufferSize();
         logger.debug("{} - SPI transfer chunk size (bufsiz) is {} bytes.", path, bufferSize);
 
-        this.isOpen = true;
         logger.info("{} - SPI Bus configured.", path);
         return this;
     }
@@ -303,7 +302,7 @@ public class FFMSpi extends SpiBase implements Spi {
      * Checks if SPI Bus is closed.
      */
     private void checkClosed() {
-        if (!isOpen) {
+        if (!isOpen()) {
             throw new Pi4JException("SPI bus  '" + path + "' is closed");
         }
     }
