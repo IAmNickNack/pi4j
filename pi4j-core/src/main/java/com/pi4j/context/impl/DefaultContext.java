@@ -351,6 +351,7 @@ public class DefaultContext implements Context {
      * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalInput()}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends DigitalInputProvider> T digitalInput() {
         return (T) new DigitalInputProviderBase() {
             @Override
@@ -364,6 +365,7 @@ public class DefaultContext implements Context {
      * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalOutput()}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends DigitalOutputProvider> T digitalOutput() {
         return (T) new DigitalOutputProviderBase() {
             @Override
@@ -377,6 +379,7 @@ public class DefaultContext implements Context {
      * Provide backwards compatibility for deprecated {@link ProviderProvider#pwm()}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends PwmProvider> T pwm() {
         return (T) new PwmProviderBase() {
             @Override
@@ -390,6 +393,7 @@ public class DefaultContext implements Context {
      * Provide backwards compatibility for deprecated {@link ProviderProvider#i2c()}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends I2CProvider> T i2c() {
         return (T) new I2CProviderBase() {
             @Override
@@ -403,6 +407,7 @@ public class DefaultContext implements Context {
      * Provide backwards compatibility for deprecated {@link ProviderProvider#spi()}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends SpiProvider> T spi() {
         return (T) new SpiProviderBase() {
             @Override
