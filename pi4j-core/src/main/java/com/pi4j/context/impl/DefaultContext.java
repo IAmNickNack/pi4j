@@ -11,8 +11,29 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.impl.DefaultPluginService;
 import com.pi4j.extension.impl.PluginStore;
+import com.pi4j.internal.ProviderProvider;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalInputConfig;
+import com.pi4j.io.gpio.digital.DigitalInputProvider;
+import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
+import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.gpio.digital.DigitalOutputConfig;
+import com.pi4j.io.gpio.digital.DigitalOutputProvider;
+import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
+import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.i2c.I2CProviderBase;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.io.pwm.PwmProviderBase;
+import com.pi4j.io.spi.Spi;
+import com.pi4j.io.spi.SpiConfig;
+import com.pi4j.io.spi.SpiProvider;
+import com.pi4j.io.spi.SpiProviderBase;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.Providers;
 import com.pi4j.registry.Registry;
@@ -254,19 +275,19 @@ public class DefaultContext implements Context {
         this.shutdownEventManager.clear();
 
         return this;
-	}
+    }
 
-	@Override
-	public <T extends IO> void shutdown(T instance) {
-		mutableRegistry.shutdown(instance);
-	}
+    @Override
+    public <T extends IO> void shutdown(T instance) {
+        mutableRegistry.shutdown(instance);
+    }
 
-	@Override
-	public <T extends IO> T shutdown(String id) {
+    @Override
+    public <T extends IO> T shutdown(String id) {
         T io = mutableRegistry.get(id);
-		shutdown(io);
+        shutdown(io);
         return io;
-	}
+    }
 
     @Override
     public boolean isShutdown() {
@@ -324,5 +345,70 @@ public class DefaultContext implements Context {
     @Override
     public void register(IO instance) {
         mutableRegistry.register(instance);
+    }
+
+    /**
+     * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalInput()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends DigitalInputProvider> T digitalInput() {
+        return (T) new DigitalInputProviderBase() {
+            @Override
+            public DigitalInput create(DigitalInputConfig config) {
+                return DefaultContext.this.create(config);
+            }
+        };
+    }
+
+    /**
+     * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalOutput()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends DigitalOutputProvider> T digitalOutput() {
+        return (T) new DigitalOutputProviderBase() {
+            @Override
+            public DigitalOutput create(DigitalOutputConfig config) {
+                return DefaultContext.this.create(config);
+            }
+        };
+    }
+
+    /**
+     * Provide backwards compatibility for deprecated {@link ProviderProvider#pwm()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends PwmProvider> T pwm() {
+        return (T) new PwmProviderBase() {
+            @Override
+            public Pwm create(PwmConfig config) {
+                return DefaultContext.this.create(config);
+            }
+        };
+    }
+
+    /**
+     * Provide backwards compatibility for deprecated {@link ProviderProvider#i2c()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends I2CProvider> T i2c() {
+        return (T) new I2CProviderBase() {
+            @Override
+            public I2C create(I2CConfig config) {
+                return DefaultContext.this.create(config);
+            }
+        };
+    }
+
+    /**
+     * Provide backwards compatibility for deprecated {@link ProviderProvider#spi()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends SpiProvider> T spi() {
+        return (T) new SpiProviderBase() {
+            @Override
+            public Spi create(SpiConfig config) {
+                return DefaultContext.this.create(config);
+            }
+        };
     }
 }
