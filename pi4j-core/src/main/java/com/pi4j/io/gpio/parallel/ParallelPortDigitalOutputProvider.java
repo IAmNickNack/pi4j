@@ -1,5 +1,8 @@
 package com.pi4j.io.gpio.parallel;
 
+import com.pi4j.io.Bcm;
+import com.pi4j.io.exception.IOAlreadyExistsException;
+import com.pi4j.io.exception.IOBoundsException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputBase;
@@ -25,17 +28,30 @@ public class ParallelPortDigitalOutputProvider extends DigitalOutputProviderBase
      * <p>
      * This could possibly be swapped for an explicit read of the port's value before setting the port's value.
      */
-    private final AtomicReference<Integer> portValue = new AtomicReference<>(0);
+    private final AtomicReference<Integer> portValue;
+
+    /**
+     * The BCM offsets that are currently in use by this provider.
+     */
+    private Bcm inUseOffsets = Bcm.fromMask(0);
 
     public ParallelPortDigitalOutputProvider(ParallelPort port) {
-        if (port.config().initialDirection() != ParallelPort.Direction.OUTPUT) {
-            throw new IllegalArgumentException("Port direction must be OUTPUT");
-        }
         this.port = port;
+        this.portValue = new AtomicReference<>(port.read());
     }
 
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
+        if ((config.bcm().mask() & port.config().bcm().packed()) == 0) {
+            throw new IOBoundsException(config.bcm().intMask(), 0, (int) port.config().bcm().packed());
+        }
+
+        if ((inUseOffsets.mask() & config.bcm().mask()) != 0) {
+            throw new IOAlreadyExistsException(config.bcm().intMask());
+        }
+
+        inUseOffsets = inUseOffsets.or(config.bcm());
+
         return new DigitalOutputBase(this, config) {
             @Override
             public DigitalState state() {
@@ -45,6 +61,9 @@ public class ParallelPortDigitalOutputProvider extends DigitalOutputProviderBase
 
             @Override
             public DigitalOutput state(DigitalState state) throws IOException {
+                if (port.getDirection() != ParallelPort.Direction.OUTPUT) {
+                    throw new IOException("Port direction is not set to OUTPUT");
+                }
                 var intValue = state.isHigh() ? 1 : 0;
                 if (intValue != 0) {
                     portValue.getAndUpdate(current -> current | (intValue << config.bcm().offsets()[0]));

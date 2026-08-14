@@ -26,9 +26,6 @@ public class ParallelPortDigitalInputProvider extends DigitalInputProviderBase {
     private final ParallelPort port;
 
     public ParallelPortDigitalInputProvider(ParallelPort port) {
-        if (port.config().initialDirection() != ParallelPort.Direction.INPUT) {
-            throw new IllegalArgumentException("Parallel port must be configured as input");
-        }
         this.port = port;
     }
 

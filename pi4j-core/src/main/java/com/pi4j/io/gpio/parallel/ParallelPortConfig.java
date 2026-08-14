@@ -44,7 +44,7 @@ public record ParallelPortConfig(
 
     @Override
     public String provider() {
-        throw new UnsupportedOperationException("Unsupported operation");
+        return null;
     }
 
     @Override
