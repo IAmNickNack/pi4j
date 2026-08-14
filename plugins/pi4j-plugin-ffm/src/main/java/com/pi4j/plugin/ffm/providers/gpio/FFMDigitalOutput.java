@@ -36,7 +36,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     public FFMDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
-        this.line = new FFMGpioLine(config.bcm(), config.bus());
+        this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
 

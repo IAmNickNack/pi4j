@@ -34,13 +34,21 @@ class FFMGpioLine {
     final FileDescriptorNative file = new FileDescriptorNative();
 
     final String deviceName;
-    final FFMGpioLineMask mask;
+    final long mask;
 
     int chipFileDescriptor;
     boolean closed = false;
 
-    FFMGpioLine(int mask, int bus) {
-        this.mask = new FFMGpioLineMask(mask);
+    /**
+     * Construct an instance of this helper with the specified mask and bus.
+     * @param mask the mask containing pin offsets to pass to ioctl
+     * @param bus the bus number of the GPIO chip
+     */
+    FFMGpioLine(long mask, int bus) {
+        if (mask == 0) {
+            throw new IllegalArgumentException("Mask must does not specify any offsets");
+        }
+        this.mask = mask;
         this.deviceName = "/dev/gpiochip" + bus;
     }
 
@@ -77,9 +85,8 @@ class FFMGpioLine {
         // Close it in a finally so any early-exit cannot leak it.
         try {
             var linesInUse = new ArrayList<Integer>();
-            for (var i = 0; i < mask.offsets().length; i++) {
-                var offset = mask.offsets()[i];
-
+            var offsets = MaskUtils.offsets(mask);
+            for (var offset : offsets) {
                 var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, offset, 0, 0, new LineAttribute[]{});
                 logger.trace("{}-{} - getting line info.", deviceName, mask);
                 lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
@@ -89,11 +96,11 @@ class FFMGpioLine {
                 logger.trace("{}-{} - GPIO line info: {}", deviceName, mask, lineInfo);
             }
             if (!linesInUse.isEmpty()) {
-                throw new InitializeException("Offsets are in use: " + new FFMGpioLineMask(linesInUse));
+                throw new InitializeException("Offsets are in use: " + linesInUse);
             }
 
             var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(mask.offsets(), ("pi4j." + consumer).getBytes(), lineConfig, mask.offsets().length, 0, 0);
+            var lineRequest = new LineRequest(offsets, ("pi4j." + consumer).getBytes(), lineConfig, offsets.length, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
             this.closed = false;

@@ -59,7 +59,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     public FFMDigitalInput(DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
-        this.line = new FFMGpioLine(config.bcm(), config.bus());
+        this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
@@ -106,7 +106,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             }
             var debounceAttribute = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-            attributes.add(new LineConfigAttribute(debounceAttribute, line.mask.mask()));
+            attributes.add(new LineConfigAttribute(debounceAttribute, line.mask));
         }
         return attributes;
     }
@@ -124,13 +124,13 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         logger.trace("{}-{} - Adding new listener", line.deviceName, line.mask);
         if (threadFactory == null) {
             this.threadFactory = Thread.ofPlatform()
-                .name(line.deviceName + "-event-detection-pin-", line.mask.mask())
+                .name(line.deviceName + "-event-detection-pin-", line.mask)
                 .daemon(true)
                 .uncaughtExceptionHandler((_, e) -> logger.error(e.getMessage(), e))
                 .factory();
             this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
-        var watcher = new EventWatcher(line.chipFileDescriptor, line.mask.mask(), debounce, line.file, PinEvent.BOTH, events -> {
+        var watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
                 var state = switch (detectedEvent.pinEvent()) {
                     case RISING -> DigitalState.HIGH;
