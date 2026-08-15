@@ -4,10 +4,6 @@ import com.pi4j.config.BcmConfig;
 import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.io.Bcm;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * <p>Abstract AddressConfigBuilderBase class.</p>
@@ -30,11 +26,8 @@ public abstract class BcmConfigBuilderBase<
 
     @SuppressWarnings("unchecked")
     @Override
-    public BUILDER_TYPE bcm(Bcm bcm) {
-        var propertyValue = Arrays.stream(bcm.offsets())
-            .mapToObj(String::valueOf)
-            .collect(Collectors.joining(","));
-        this.properties.put(BcmConfig.BCM_KEY, propertyValue);
+    public BUILDER_TYPE bcm(Integer bcm) {
+        this.properties.put(BcmConfig.BCM_KEY, bcm.toString());
         return (BUILDER_TYPE) this;
     }
 }
