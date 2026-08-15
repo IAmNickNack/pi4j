@@ -2,14 +2,11 @@ package com.pi4j.plugin.mock.provider.gpio.parallel;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.io.exception.IOAlreadyExistsException;
-import com.pi4j.io.exception.IOBoundsException;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.io.gpio.parallel.ParallelPortDigitalOutputProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -114,59 +111,6 @@ class MockParallelPortProviderTest {
 
             port.write(1);
             assertEquals(DigitalState.LOW, input.state());
-        }
-    }
-
-    @Nested
-    class OutputProviderAvailabilityTests {
-        private final Context context = Pi4J.newContextBuilder()
-            .add(new MockParallelPortProvider())
-            .build();
-
-        private final ParallelPort port = context.create(ParallelPortConfigBuilder.newInstance()
-            .initialDirection(ParallelPort.Direction.OUTPUT)
-            .id("mock-parallel-port")
-            .bcm(1)
-            .bcm(3)
-            .build()
-        );
-
-        @Test
-        void canCreateValidDigitalOutput() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
-            var output0 = provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(1)
-                .build()
-            );
-            assertNotNull(output0);
-
-            var output1 = provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(3)
-                .build()
-            );
-            assertNotNull(output1);
-        }
-
-        @Test
-        void cannotCreateInvalidDigitalOutput() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
-            assertThrows(IOBoundsException.class, () -> provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(2)
-                .build()
-            ));
-        }
-
-        @Test
-        void cannotRecreateTheSameOffset() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
-            provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(1)
-                .build()
-            );
-            assertThrows(IOAlreadyExistsException.class, () -> provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(1)
-                .build()
-            ));
         }
     }
 }

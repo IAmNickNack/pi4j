@@ -3,9 +3,7 @@ package com.pi4j.config.impl;
 import com.pi4j.config.BcmConfig;
 import com.pi4j.config.ConfigBase;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
-import com.pi4j.io.Bcm;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -16,7 +14,7 @@ public abstract class BcmConfigBase
     implements BcmConfig {
 
     // private configuration properties
-    protected Bcm bcm = null;
+    protected Integer bcm = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -26,10 +24,6 @@ public abstract class BcmConfigBase
     }
 
     protected BcmConfigBase(Integer bcm) {
-        this.bcm = Bcm.fromOffset(bcm);
-    }
-
-    protected BcmConfigBase(Bcm bcm) {
         super();
         this.bcm = bcm;
     }
@@ -42,30 +36,17 @@ public abstract class BcmConfigBase
 
         // load address property
         if (properties.containsKey(BCM_KEY)) {
-            var offsets = Arrays.stream(properties.get(BCM_KEY).split(","))
-                                .map(String::trim)
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-            this.bcm = Bcm.fromOffsets(offsets);
+            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
         } else {
             throw new ConfigMissingRequiredKeyException(BCM_KEY);
         }
     }
 
-    @Override
     public Integer address() {
-        if (bcm == null) {
-            throw new IllegalStateException("Bcm has not been set");
-        }
-
-        if (bcm.offsets().length != 1) {
-            throw new IllegalStateException("Bcm must have a single offset");
-        }
-        return bcm.offsets()[0];
+        return this.bcm;
     }
 
-
-    public Bcm bcm() {
+    public Integer bcm() {
         return this.bcm;
     }
 }

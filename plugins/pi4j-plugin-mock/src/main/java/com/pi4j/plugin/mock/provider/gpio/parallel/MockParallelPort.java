@@ -1,10 +1,14 @@
 package com.pi4j.plugin.mock.provider.gpio.parallel;
 
 import com.pi4j.io.IOBase;
+import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 
+/**
+ * Placeholder mock implementation of a {@link ParallelPort}
+ */
 public class MockParallelPort
     extends IOBase<ParallelPort, ParallelPortConfig, ParallelPortProvider>
     implements ParallelPort {
@@ -28,7 +32,7 @@ public class MockParallelPort
     @Override
     public void write(int value) {
         if (this.direction == Direction.OUTPUT) {
-            this.value = value & (int) config.bcm().packed();
+            this.value = value & (int) MaskUtils.packed(config.mask());
         }
     }
 

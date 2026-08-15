@@ -1,6 +1,5 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.io.Bcm;
 import com.pi4j.io.ListenableOnOffRead;
 import com.pi4j.io.gpio.Gpio;
 
@@ -32,7 +31,7 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
      *
      * @return the configured BCM pin number, or {@code null} if none was configured
      */
-    default Bcm bcm() {
+    default Integer bcm() {
         return config().bcm();
     }
 

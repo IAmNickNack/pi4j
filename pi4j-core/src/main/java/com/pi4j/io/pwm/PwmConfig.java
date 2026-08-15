@@ -60,7 +60,7 @@ public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfi
     default int getUniqueIdentifier() {
         return (chip() == null ? 0 : (chip() << 16))
             + (channel() == null ? 0 : (channel() << 8))
-            + (bcm() == null ? 0 : bcm().intMask());
+            + (bcm() == null ? 0 : bcm());
     }
 
     /**

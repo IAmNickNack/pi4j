@@ -10,6 +10,14 @@ import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputConfigBuilder;
 public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
 
     /**
+     * Sets the BCM pin number the output controls.
+     *
+     * @param bcm the Broadcom GPIO pin number
+     * @return this builder for method chaining
+     */
+    DigitalOutputConfigBuilder bcm(Integer bcm);
+
+    /**
      * Sets the state the output is driven to when Pi4J shuts down.
      *
      * @param state the shutdown state to apply

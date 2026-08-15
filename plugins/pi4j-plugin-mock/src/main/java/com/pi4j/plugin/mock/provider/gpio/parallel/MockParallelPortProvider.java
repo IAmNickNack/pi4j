@@ -5,6 +5,9 @@ import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 import com.pi4j.provider.ProviderBase;
 
+/**
+ * Placeholder mock implementation of a {@link ParallelPortProvider}
+ */
 public class MockParallelPortProvider
     extends ProviderBase<ParallelPortProvider, ParallelPort, ParallelPortConfig>
     implements ParallelPortProvider {

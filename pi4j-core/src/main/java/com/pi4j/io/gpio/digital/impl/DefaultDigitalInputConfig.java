@@ -1,6 +1,5 @@
 package com.pi4j.io.gpio.digital.impl;
 
-import com.pi4j.io.Bcm;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -58,19 +57,30 @@ public class DefaultDigitalInputConfig
         }
     }
 
+    /**
+     * @deprecated use {@link #bus()} instead.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.bcm;
+    }
+
     @Override
     public Integer bus() {
         return this.bus;
     }
 
     @Override
-    public Bcm bcm() {
+    public Integer bcm() {
         return this.bcm;
     }
 
     @Override
     public int getUniqueIdentifier() {
-        return bcm().intMask();
+        return bcm();
     }
 
     @Override
