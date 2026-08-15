@@ -4,7 +4,6 @@ import com.pi4j.Pi4J;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.io.gpio.parallel.ParallelPortDigitalOutputProvider;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +28,7 @@ class FFMParallelPortProviderTest {
             .build()
         );
 
-        var virtualProvider = new ParallelPortDigitalOutputProvider(device);
+        var virtualProvider = device.digitalOutputProvider();
 
         var digital0 = virtualProvider.create(DigitalOutputConfigBuilder.newInstance()
             .bcm(0)

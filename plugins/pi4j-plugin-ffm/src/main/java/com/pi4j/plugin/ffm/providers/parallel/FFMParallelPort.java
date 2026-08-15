@@ -3,15 +3,16 @@ package com.pi4j.plugin.ffm.providers.parallel;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.io.IOBase;
+import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortProvider;
+import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
-import com.pi4j.plugin.ffm.common.FFMGpioLine;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class FFMParallelPort
         super(provider, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
-        this.gpioLine = new FFMGpioLine(config.bcm(), config.bus());
+        this.gpioLine = new FFMGpioLine(config.mask(), config.bus());
     }
 
     @Override
@@ -116,7 +117,7 @@ public class FFMParallelPort
 
                 attributes = new LineConfigAttribute[] {
                     // TODO: previous experience suggests packing is required. Check this
-                    new LineConfigAttribute(attribute, config.bcm().pack())
+                    new LineConfigAttribute(attribute, MaskUtils.packed(config.mask()))
                 };
             }
         }
@@ -145,7 +146,7 @@ public class FFMParallelPort
             );
             attributes = new LineConfigAttribute[] {
                 // TODO: previous experience suggests packing is required. Check this
-                new LineConfigAttribute(attribute, config.bcm().pack())
+                new LineConfigAttribute(attribute, MaskUtils.packed(config.mask()))
             };
         }
 
