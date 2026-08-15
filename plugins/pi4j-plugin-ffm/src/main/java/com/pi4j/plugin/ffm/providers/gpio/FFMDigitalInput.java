@@ -59,7 +59,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     public FFMDigitalInput(DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
-        this.line = new FFMGpioLine(config.bcm(), config.bus());
+        this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
@@ -91,10 +91,10 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         try {
             line.openAndRequest(flags, attributes, getClass().getSimpleName());
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalInput offset Initialization error: {}", line.deviceName, line.offset, e.getMessage());
+            logger.error("{}-{} - DigitalInput offset Initialization error: {}", line.deviceName, line.mask, e.getMessage());
             throw e;
         }
-        logger.info("{}-{} - DigitalInput offset configured.", line.deviceName, line.offset);
+        logger.info("{}-{} - DigitalInput offset configured.", line.deviceName, line.mask);
         return this;
     }
 
@@ -106,7 +106,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             }
             var debounceAttribute = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-            attributes.add(new LineConfigAttribute(debounceAttribute, 1L << line.offset));
+            attributes.add(new LineConfigAttribute(debounceAttribute, line.mask));
         }
         return attributes;
     }
@@ -121,16 +121,16 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
-        logger.trace("{}-{} - Adding new listener", line.deviceName, line.offset);
+        logger.trace("{}-{} - Adding new listener", line.deviceName, line.mask);
         if (threadFactory == null) {
             this.threadFactory = Thread.ofPlatform()
-                .name(line.deviceName + "-event-detection-pin-", line.offset)
+                .name(line.deviceName + "-event-detection-pin-", line.mask)
                 .daemon(true)
                 .uncaughtExceptionHandler((_, e) -> logger.error(e.getMessage(), e))
                 .factory();
             this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
-        var watcher = new EventWatcher(line.chipFileDescriptor, line.offset, debounce, line.file, PinEvent.BOTH, events -> {
+        var watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
                 var state = switch (detectedEvent.pinEvent()) {
                     case RISING -> DigitalState.HIGH;
@@ -144,7 +144,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         // add listener first to avoid race with event dispatch
         super.addListener(listener);
         eventTaskProcessor.submit(watcher);
-        logger.trace("{}-{} - New listener added", line.deviceName, line.offset);
+        logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
         return this;
     }
 
@@ -174,9 +174,9 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
-        logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.offset);
+        logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.mask);
         try {
-            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.offset);
+            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.mask);
             for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
             }
@@ -186,7 +186,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             // thread still holds the line fd. Closing the fd without waiting would leave the GPIO
             // line flagged USED on the next create attempt.
             if (eventTaskProcessor != null) {
-                logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.offset);
+                logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.mask);
                 eventTaskProcessor.shutdown();
                 var terminated = false;
                 for (int attempt = 0;
@@ -195,13 +195,13 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     if (!terminated) {
                         logger.trace("{}-{} - Event processor still running, waiting for watcher threads",
-                            line.deviceName, line.offset);
+                            line.deviceName, line.mask);
                     }
                 }
                 if (!terminated) {
                     logger.error(
                         "{}-{} - Event watcher threads did not terminate within {}ms; forcing shutdown",
-                        line.deviceName, line.offset,
+                        line.deviceName, line.mask,
                         (long) EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
                     eventTaskProcessor.shutdownNow();
                 }
@@ -212,7 +212,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         } finally {
             line.close();
         }
-        logger.info("{}-{} - GPIO offset is closed.", line.deviceName, line.offset);
+        logger.info("{}-{} - GPIO offset is closed.", line.deviceName, line.mask);
         return this;
     }
 
@@ -226,6 +226,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     @Override
     public DigitalState state() {
-        return line.readState();
+        return DigitalState.getState(line.readValue());
     }
 }
