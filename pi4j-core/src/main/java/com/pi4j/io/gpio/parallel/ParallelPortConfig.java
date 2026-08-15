@@ -1,6 +1,5 @@
 package com.pi4j.io.gpio.parallel;
 
-import com.pi4j.io.Bcm;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.gpio.digital.PullResistance;
 
@@ -12,8 +11,7 @@ import java.util.Map;
  * @param name the user-provided name
  * @param description the user-provided description
  * @param bus the bus number / GPIO chip
- * @param bcm the BCM details / pin numbers
- * @param onValue the value to set when the pin is set to HIGH
+ * @param mask bit mask representing the pins in the port
  * @param pull the pull resistance setting
  * @param debounce the debounce time in microseconds
  * @param initialValue the initial value of the port
@@ -24,22 +22,21 @@ public record ParallelPortConfig(
     @Override String id,
     @Override String name,
     @Override String description,
-    Integer bus,
-    Bcm bcm,
-    Integer onValue,
+    int bus,
+    int mask,
     // input
     PullResistance pull,
-    Long debounce,
+    long debounce,
     // output
-    Integer initialValue,
-    Integer shutdownValue,
+    int initialValue,
+    int shutdownValue,
     // port
     ParallelPort.Direction initialDirection
 ) implements IOConfig {
 
     @Override
     public int getUniqueIdentifier() {
-        return bcm.intMask();
+        return mask;
     }
 
     @Override

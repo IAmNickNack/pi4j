@@ -2,7 +2,10 @@ package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.Gpio;
-import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalInputProvider;
+import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 
 /**
  * A {@link Gpio} which is capable of reading and writing multiple bits to a device.
@@ -78,17 +81,25 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortC
 
     /**
      * Create a digital input provider based on the parallel port.
-     * @return a new digital input provider
+     * <p>
+     * Implementing classes ideally provide a singleton instance of this provider to avoid potential conflicts
+     * in BCM allocations.
+     *
+     * @return a provider for creating {@link DigitalInput}s backed by this port
      */
     default DigitalInputProvider digitalInputProvider() {
-        return new ParallelPortDigitalInputProvider(this);
+        return new VirtualDigitalInputProvider(this);
     }
 
     /**
      * Create a digital output provider based on the parallel port.
-     * @return a new digital output provider
+     * <p>
+     * Implementing classes ideally provide a singleton instance of this provider to avoid potential conflicts
+     * in BCM allocations.
+     *
+     * @return a provider for creating {@link DigitalOutput}s backed by this port
      */
     default DigitalOutputProvider digitalOutputProvider() {
-        return new ParallelPortDigitalOutputProvider(this);
+        return new VirtualDigitalOutputProvider(this);
     }
 }

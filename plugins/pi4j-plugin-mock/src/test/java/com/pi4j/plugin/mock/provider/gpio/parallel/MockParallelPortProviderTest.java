@@ -9,7 +9,7 @@ import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.io.gpio.parallel.ParallelPortDigitalOutputProvider;
+import com.pi4j.io.gpio.parallel.VirtualDigitalOutputProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -133,15 +133,15 @@ class MockParallelPortProviderTest {
 
         @Test
         void canCreateValidDigitalOutput() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
+            var provider = new VirtualDigitalOutputProvider(port);
             var output0 = provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(1)
+                .bcm(0)
                 .build()
             );
             assertNotNull(output0);
 
             var output1 = provider.create(DigitalOutputConfigBuilder.newInstance()
-                .bcm(3)
+                .bcm(1)
                 .build()
             );
             assertNotNull(output1);
@@ -149,7 +149,7 @@ class MockParallelPortProviderTest {
 
         @Test
         void cannotCreateInvalidDigitalOutput() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
+            var provider = new VirtualDigitalOutputProvider(port);
             assertThrows(IOBoundsException.class, () -> provider.create(DigitalOutputConfigBuilder.newInstance()
                 .bcm(2)
                 .build()
@@ -158,7 +158,7 @@ class MockParallelPortProviderTest {
 
         @Test
         void cannotRecreateTheSameOffset() {
-            var provider = new ParallelPortDigitalOutputProvider(port);
+            var provider = new VirtualDigitalOutputProvider(port);
             provider.create(DigitalOutputConfigBuilder.newInstance()
                 .bcm(1)
                 .build()

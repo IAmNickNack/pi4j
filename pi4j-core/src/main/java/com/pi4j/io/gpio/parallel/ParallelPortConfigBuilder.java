@@ -1,12 +1,8 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.config.Config;
-import com.pi4j.io.Bcm;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBuilderBase;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Builder for {@link ParallelPortConfig}
@@ -14,9 +10,7 @@ import java.util.List;
 public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
 
     private Integer bus = 0;
-    private final List<Integer> bcmPins = new ArrayList<>();
-    private Bcm bcm;
-    private Integer onValue = 1;
+    private int bcmMask = 0;
     private ParallelPort.Direction initialDirection = ParallelPort.Direction.INPUT;
     private Integer initialValue = 0;
     private Integer shutdownValue = 0;
@@ -28,18 +22,8 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param bus the GPIO chip number
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder bus(Integer bus) {
+    public ParallelPortConfigBuilder bus(int bus) {
         this.bus = bus;
-        return this;
-    }
-
-    /**
-     * Specify the BCM pin mappings
-     * @param bcm the BCM pin mappings
-     * @return this builder instance
-     */
-    public ParallelPortConfigBuilder bcm(Bcm bcm) {
-        this.bcm = bcm;
         return this;
     }
 
@@ -48,8 +32,8 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param bcm the BCM pin mapping
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder bcm(Integer bcm) {
-        bcmPins.add(bcm);
+    public ParallelPortConfigBuilder bcm(int bcm) {
+        this.bcmMask |= (1 << bcm);
         return this;
     }
 
@@ -64,22 +48,11 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
     }
 
     /**
-     * Specify the value interpreted as `on`.
-     * TODO: check if this is necessary / relevant
-     * @param onValue the on value
-     * @return this builder instance
-     */
-    public ParallelPortConfigBuilder onValue(Integer onValue) {
-        this.onValue = onValue;
-        return this;
-    }
-
-    /**
      * Specify the initial value when the port is intialised as OUTPUT
      * @param initialValue the initial value
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder initialValue(Integer initialValue) {
+    public ParallelPortConfigBuilder initialValue(int initialValue) {
         this.initialValue = initialValue;
         return this;
     }
@@ -89,7 +62,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param shutdownValue the shutdown value
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder shutdownValue(Integer shutdownValue) {
+    public ParallelPortConfigBuilder shutdownValue(int shutdownValue) {
         this.shutdownValue = shutdownValue;
         return this;
     }
@@ -109,7 +82,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @param debounce the debounce time
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder debounce(Long debounce) {
+    public ParallelPortConfigBuilder debounce(long debounce) {
         this.debounce = debounce;
         return this;
     }
@@ -120,7 +93,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      */
     @Override
     public ParallelPortConfig build() {
-        if (bcmPins.isEmpty() && bcm == null) {
+        if (bcmMask == 0) {
             throw new IllegalArgumentException("BCM pins must be specified");
         }
         if (initialDirection == null) {
@@ -131,8 +104,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
             this.properties.get(Config.NAME_KEY),
             this.properties.get(Config.DESCRIPTION_KEY),
             this.bus,
-            (this.bcm != null) ? this.bcm : Bcm.fromOffsets(bcmPins),
-            this.onValue,
+            this.bcmMask,
             this.pull,
             this.debounce,
             this.initialValue,

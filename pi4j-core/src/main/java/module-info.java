@@ -37,6 +37,7 @@ module com.pi4j {
     exports com.pi4j.boardinfo.util.command;
     opens com.pi4j.boardinfo.util.command;
     exports com.pi4j.io.gpio.parallel;
+    exports com.pi4j.io.gpio.parallel.impl;
 
     // extensibility service interfaces
     uses com.pi4j.extension.Plugin;
