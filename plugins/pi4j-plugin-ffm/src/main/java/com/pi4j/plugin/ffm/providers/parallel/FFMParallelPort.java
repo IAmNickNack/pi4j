@@ -2,9 +2,9 @@ package com.pi4j.plugin.ffm.providers.parallel;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
-import com.pi4j.io.IOBase;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
+import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
@@ -16,15 +16,11 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 
 import java.util.List;
 
-public class FFMParallelPort
-    extends IOBase<ParallelPort, ParallelPortConfig, ParallelPortProvider>
-    implements ParallelPort {
+public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
-
-    private Direction direction;
 
     /**
      * Creates a new GPIO I/O instance bound to the given provider and configuration.
@@ -50,26 +46,18 @@ public class FFMParallelPort
     }
 
     @Override
-    public void write(int value) {
+    protected void handleWrite(int value) {
         gpioLine.writeValue(value);
     }
 
     @Override
-    public int read() {
+    protected int handleRead() {
         return gpioLine.readValue();
     }
 
     @Override
-    public void setDirection(Direction direction) {
-        if (direction == this.direction) {
-            return;
-        }
-        this.direction = direction;
+    protected Direction handleSetDirection(Direction direction) {
         gpioLine.reconfigure(direction == Direction.INPUT ? inputLineConfig : outputLineConfig);
-    }
-
-    @Override
-    public Direction getDirection() {
         return direction;
     }
 
