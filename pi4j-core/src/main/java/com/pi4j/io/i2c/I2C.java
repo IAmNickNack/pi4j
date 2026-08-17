@@ -158,4 +158,62 @@ public interface I2C
      * @return the value returned by the action
      */
     <T> T execute(Callable<T> action);
+
+
+    @Override
+    default int read() {
+        byte[] ioBuffer = new byte[1];
+        read(ioBuffer, 0, 1);
+        return ioBuffer[0] & 255;
+    }
+
+    @Override
+    default int write(byte b) {
+        write(new byte[] {b}, 0, 1);
+        return 1;
+    }
+
+    @Override
+    default int readRegister(int i) {
+        byte[] ioBuffer = new byte[] {(byte) i};
+        writeThenRead(ioBuffer, 0, 1, 0, ioBuffer, 0, 1);
+        return ioBuffer[0] & 255;
+    }
+
+    @Override
+    default int readRegister(byte[] register, byte[] data, int offset, int length) {
+        writeThenRead(register, 0, register.length, 0, data, offset, length);
+        return length;
+    }
+
+    @Override
+    default int readRegister(int i, byte[] bytes, int offset, int count) {
+        byte[] ioBuffer = new byte[] {(byte) i};
+        writeThenRead(ioBuffer, 0, 1, 0, bytes, offset, count);
+        return count;
+    }
+
+    @Override
+    default int writeRegister(int i, byte b) {
+        write(new byte[] {(byte) i, b}, 0, 2);
+        return 1;
+    }
+
+    @Override
+    default int writeRegister(int i, byte[] bytes, int offset, int length) {
+        byte[] combined = new byte[length + 1];
+        combined[0] = (byte) i;
+        System.arraycopy(bytes, offset, combined, 1, length);
+        write(combined, 0, combined.length);
+        return length;
+    }
+
+    @Override
+    default int writeRegister(byte[] register, byte[] data, int offset, int length) {
+        byte[] combined = new byte[ register.length + length];
+        System.arraycopy(register, 0, combined, 0, register.length);
+        System.arraycopy(data, offset, combined, register.length, length);
+        write(combined, 0, combined.length);
+        return length;
+    }
 }
