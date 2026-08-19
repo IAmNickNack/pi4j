@@ -21,7 +21,7 @@ import java.io.Closeable;
  * @param <PROVIDER_TYPE> the {@link Provider} type backing this instance
  */
 public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
-        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
+        extends IdentityBase implements com.pi4j.io.IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
 
     protected CONFIG_TYPE config;
     protected PROVIDER_TYPE provider;

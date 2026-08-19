@@ -254,6 +254,7 @@
         <slf4j.version>2.0.17</slf4j.version>
         <jna.version>5.15.0</jna.version>
         <checkstyle.version>13.10.0</checkstyle.version>
+        <pmd.version>7.26.0</pmd.version>
 
         <!-- PLUGIN VERSIONS -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
@@ -269,6 +270,7 @@
         <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
+        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <maven-resource-plugin.version>3.3.1</maven-resource-plugin.version>
         <maven-scm-plugin.version>2.1.0</maven-scm-plugin.version>
@@ -678,6 +680,22 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                    <configuration>
+                        <targetJdk>25</targetJdk>
+                        <failOnViolation>false</failOnViolation>
+                        <rulesets>
+                            <ruleset>config/pmd/ruleset.xml</ruleset>
+                        </rulesets>
+                        <printFailingErrors>true</printFailingErrors>
+                        <failurePriority>2</failurePriority>
+                        <linkXRef>false</linkXRef>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -785,6 +803,19 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -831,6 +862,19 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>pmd</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
         </plugins>
     </reporting>
 
