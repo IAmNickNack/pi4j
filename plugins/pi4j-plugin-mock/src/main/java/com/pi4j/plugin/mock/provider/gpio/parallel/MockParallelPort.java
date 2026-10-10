@@ -41,6 +41,7 @@ public class MockParallelPort
     public void mockValue(int value) {
         // don't raise events for output ports
         if (this.getDirection() == Direction.OUTPUT) {
+            handleWrite(value & (int) MaskUtils.packed(config.mask()));
             return;
         }
 
