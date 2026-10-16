@@ -50,6 +50,12 @@ public class MaskUtils {
         return mask;
     }
 
+    /**
+     * "pack" a value, removing any zero bits. This is used to convert hardware offsets to logical, integer
+     * representations as is required when writing to GPIOs.
+     * @param mask an unpacked mask
+     * @return a packed mask with the same number of bits set as the set bits of input mask
+     */
     public static long packed(long mask) {
         long packed = 0;
         for (int i = 0; i < Long.bitCount(mask); i++) {
@@ -57,6 +63,30 @@ public class MaskUtils {
         }
         return packed;
     }
+
+    /**
+     * Convert a value that complies with the mask to be packed to a logical value
+     * @param mask an unpacked mask
+     * @param value a value that complies with the mask
+     * @return a packed, logical value
+     */
+    public static long packByMask(long mask, long value) {
+        long out = 0;
+        int i = 0;          // absolute bit position in value
+        int k = 0;          // next bit position in packed output
+        long m = mask;
+        while (m != 0) {
+            int tz = Long.numberOfTrailingZeros(m); // skip mask zero bits
+            i += tz;
+            m >>>= tz;
+            out |= ((value >>> i) & 1L) << k;
+            m >>>= 1;       // consumed this mask bit
+            i++;            // move to next absolute bit position
+            k++;            // advance packed output position
+        }
+        return out;
+    }
+
 
     /**
      * Iterator over the offsets of a mask

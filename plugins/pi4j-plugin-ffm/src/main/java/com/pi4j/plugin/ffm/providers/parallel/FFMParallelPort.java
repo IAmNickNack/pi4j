@@ -5,17 +5,26 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
+import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
+import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
+import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.UnaryOperator;
 
 /**
@@ -29,8 +38,22 @@ public sealed class FFMParallelPort
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
 
+    private final EventWatcher eventWatcher;
     /**
-     * Creates a new GPIO parallel port instance bound to the given provider and configuration.
+     * Executor service for the event watcher thread. This is a single-threaded executor that ultimately polls
+     * the hardware layer.
+     */
+    private final ExecutorService watcherService;
+    /**
+     * Executor service for dispatching events to listeners. This is a cached thread pool that allows for
+     * concurrent dispatching of events to multiple listeners without blocking the event watcher thread.
+     */
+    private final ExecutorService dispatcherService;
+
+    private final Logger logger = LoggerFactory.getLogger(FFMParallelPort.class);
+
+    /**
+     * Creates a new GPIO parallel port instance bound to the given context and configuration.
      *
      * @param context the Pi4J context
      * @param config   the configuration describing this I/O
@@ -47,6 +70,39 @@ public sealed class FFMParallelPort
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
+
+        /*
+         TODO: It's unnecessary to run individual {@link EventWatcher} threads for each listener. This
+          generates more poll and read operations than necessary. Instead, we should have a single watcher thread
+          per port and dispatch events to all listeners from there.
+        */
+        this.watcherService = Executors.newSingleThreadExecutor(Thread.ofPlatform()
+            .name(config.id() + "-watcher", 0)
+            .daemon(true)
+            .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in watcher thread", e))
+            .factory()
+        );
+        /*
+         TODO: This might not be a responsibility of the {@link FFMParallelPort}.
+          This could be delegated to an appropriate {@link EventManager}
+         */
+        this.dispatcherService = Executors.newCachedThreadPool(Thread.ofPlatform()
+            .name(config.id() + "-dispatcher", 0)
+            .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in dispatcher thread", e))
+            .factory()
+        );
+
+        this.eventWatcher = new EventWatcher(
+            gpioLine.chipFileDescriptor,
+            gpioLine.mask,
+            config.debounce(),
+            gpioLine.file,
+            PinEvent.BOTH,
+            eventList -> {
+                var notification = eventsAsNotification(eventList);
+                dispatcherService.submit(() -> events.dispatch(notification));
+            }
+        );
     }
 
     @Override
@@ -77,12 +133,21 @@ public sealed class FFMParallelPort
 
     @Override
     public ParallelPort addListener(PinStateChangeListener listener) {
-        throw new UnsupportedOperationException("TBD");
+        boolean startRequired = !events.hasListeners();
+        super.addListener(listener);
+        if (startRequired) {
+            watcherService.submit(eventWatcher);
+        }
+        return this;
     }
 
     @Override
     public ParallelPort removeListener(PinStateChangeListener listener) {
-        throw new UnsupportedOperationException("TBD");
+        super.removeListener(listener);
+        if (!events.hasListeners()) {
+            eventWatcher.stopWatching();
+        }
+        return this;
     }
 
     @Override
@@ -91,6 +156,11 @@ public sealed class FFMParallelPort
             return;
         }
         super.close();
+        if (events.hasListeners()) {
+            eventWatcher.stopWatching();
+        }
+        watcherService.shutdown();
+        dispatcherService.shutdown();
         if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
             write(config.shutdownValue());
         }
@@ -119,6 +189,9 @@ public sealed class FFMParallelPort
                 case OFF -> 0;
             };
 
+            /*
+             TODO: Configuration might want to allow the user not to forced to listen to both edges.
+             */
             eventFlags |= PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
 
             if (config.debounce() * 1000 > Integer.MAX_VALUE) {
@@ -166,6 +239,45 @@ public sealed class FFMParallelPort
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
+    }
+
+    /**
+     * Convert a list of {@link DetectedEvent} to a {@link PinStateChangedNotification}
+     * <p>
+     * TODO: This does not currently detect missing events. This requires monitoring {@link LineEvent#lineSeqno()} for
+     *  each line and maybe raises a question as to whether we need {@link DetectedEvent} here and just consume
+     *  {@link LineEvent} directly.
+     * <p>
+     * TODO: Additionally, we then need to ask whether it is necessary to track {@link LineEvent#lineSeqno()} across
+     *  {@link ParallelPort.PinStateChangedNotification}s to capture dropping of first and last events. This might
+     *  have to consider any downside in introducing mutable state to this class.
+     *
+     * @param eventList the list of detected events
+     * @return a {@link PinStateChangedNotification} representing the state changes
+     */
+    private ParallelPort.PinStateChangedNotification eventsAsNotification(List<DetectedEvent> eventList) {
+        PinStateChangedEvent[] changeEvents = new PinStateChangedEvent[eventList.size()];
+        for (int i = 0; i < eventList.size(); i++) {
+            changeEvents[i] = eventAsChangeEvent(eventList.get(i));
+        }
+
+        return new PinStateChangedNotification(this, false, changeEvents);
+    }
+
+    /**
+     * Map a {@link DetectedEvent} to a {@link PinStateChangedEvent}
+     * @param event the detected event
+     * @return a {@link PinStateChangedEvent} representing the state change
+     */
+    private ParallelPort.PinStateChangedEvent eventAsChangeEvent(DetectedEvent event) {
+        // convert the hardware offset to the logical user-specified offset
+        int offset = (int) MaskUtils.packByMask(config.mask(), 1L << event.offset());
+        // represent the change type by its resulting digital state value
+        var state = event.pinEvent() == PinEvent.RISING
+            ? DigitalState.HIGH
+            : DigitalState.LOW;
+
+        return new PinStateChangedEvent(offset, state);
     }
 
     /**

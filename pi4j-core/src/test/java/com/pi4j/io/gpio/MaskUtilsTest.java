@@ -34,4 +34,18 @@ class MaskUtilsTest {
             assertEquals(mask, processedMask);
         }
     }
+
+    @Test
+    void canPackValuesAccordingToMask() {
+        record Expectation(long mask, long value, long expected) {}
+
+        for (var expectation : new Expectation[] {
+            new Expectation(0b101, 0b000, 0b000),
+            new Expectation(0b101, 0b001, 0b001),
+            new Expectation(0b101, 0b100, 0b010),
+            new Expectation(0b101, 0b101, 0b011)
+        }) {
+            assertEquals(expectation.expected, MaskUtils.packByMask(expectation.mask, expectation.value));
+        }
+    }
 }
