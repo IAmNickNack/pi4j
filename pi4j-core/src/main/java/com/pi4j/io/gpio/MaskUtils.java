@@ -91,7 +91,7 @@ public class MaskUtils {
      * Convert a hardware offset to the offset in the packed equivalent of the mask
      * @param mask the unpacked hardware mask
      * @param offset the offset in the hardware mask
-     * @return the offset in the packed mask
+     * @return the offset in the packed mask or -1 if the offset is not set in the mask
      */
     public static int packOffsetByMask(long mask, int offset) {
         int i = 0;          // absolute bit position in value
@@ -108,7 +108,7 @@ public class MaskUtils {
             i++;            // move to next absolute bit position
             k++;            // advance packed output position
         }
-        throw new IllegalArgumentException("Offset " + offset + " is not set in mask " + Long.toBinaryString(mask));
+        return -1;          // offset not found in mask
     }
 
     /**

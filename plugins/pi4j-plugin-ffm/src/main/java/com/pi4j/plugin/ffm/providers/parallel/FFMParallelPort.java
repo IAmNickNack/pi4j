@@ -353,7 +353,7 @@ public sealed class FFMParallelPort
 
         @Override
         protected int mapGpioToPin(int offset) {
-            return mappingLogic.mapOffset(super.mapGpioToPin(offset));
+            return mappingLogic.getUserOffset(super.mapGpioToPin(offset));
         }
     }
 
@@ -435,12 +435,12 @@ public sealed class FFMParallelPort
 
         /**
          * Find the user-specified offset for an in-sequence offset
-         * @param offset the in-sequence offset as maybe packed from a {@link LineEvent#offset()}
+         * @param inSequenceOffset the in-sequence offset as maybe packed from a {@link LineEvent#offset()}
          * @return the logical offset according to the user-specified sequence
          */
-        public int mapOffset(int offset) {
-            if (offset < offsets.length) {
-                return offsets[offset];
+        public int getUserOffset(int inSequenceOffset) {
+            if (inSequenceOffset < offsets.length) {
+                return offsets[inSequenceOffset];
             } else {
                 return -1;
             }

@@ -48,4 +48,17 @@ class MaskUtilsTest {
             assertEquals(expectation.expected, MaskUtils.packValueByMask(expectation.mask, expectation.value));
         }
     }
+
+    @Test
+    void canPackOffsetAccordingToMask() {
+        record Expectation(long mask, int offset, long expected) {}
+
+        for (var expectation : new Expectation[] {
+            new Expectation(0b101, 0, 0),
+            new Expectation(0b101, 1, -1), // invalid offset, should return -1
+            new Expectation(0b101, 2, 1),
+        }) {
+            assertEquals(expectation.expected, MaskUtils.packOffsetByMask(expectation.mask, expectation.offset));
+        }
+    }
 }
