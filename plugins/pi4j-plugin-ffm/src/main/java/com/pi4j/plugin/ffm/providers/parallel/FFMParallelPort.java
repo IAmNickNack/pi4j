@@ -103,15 +103,20 @@ public sealed class FFMParallelPort
     @Override
     public ParallelPort applyInitialState() throws InitializeException {
         if (config.initialDirection() == Direction.INPUT) {
+            /*
+             TODO: Given other comments about the event watcher, this could probably be moved to a factory.
+             */
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
             /*
              TODO: There's something a little smelly about late-init values in that `null` does not explicitly mean
-              that the property is not required, only that it has not yet been initialised.
+              that the property is not required, only that it has not yet been initialised. This then requires code
+              to call potentially unnecessary null checks and initialisation logic in multiple places.
+              -
               I'd question whether the event watcher should not be owned by a factory to solve this. The port's
               event watcher can then be `final`.
               -
-              This has to delayed until `openAndRequest` due to the file descriptor being required for the event watcher.
-              It is not possible to initialise the event watcher before this point.
+              This has to be delayed until at least `openAndRequest` has been called due to the file descriptor being
+              required for the event watcher. It's not possible to initialise the event watcher before this point.
              */
             if (this.eventWatcher == null) {
                 this.eventWatcher = new EventWatcher(
