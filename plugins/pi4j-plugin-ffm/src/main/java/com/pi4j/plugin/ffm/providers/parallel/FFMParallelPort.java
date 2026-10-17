@@ -74,8 +74,8 @@ public sealed class FFMParallelPort
         // Events are only available if the initial direction is INPUT. No need to create these for OUTPUT ports
         if (config.initialDirection() == Direction.INPUT) {
             /*
-             TODO: It's unnecessary to run individual {@link EventWatcher} threads for each listener.
-              Not only does this generates more poll and read operations than necessary,
+             TODO: It's unnecessary/detremental to run individual {@link EventWatcher} threads for each listener.
+              Not only does this generate more poll and read operations than necessary,
               if there's more than one listener, one or the other poller is going to get first dibs on the
               event buffer and multiple listeners will each see different events.
             */
@@ -106,9 +106,13 @@ public sealed class FFMParallelPort
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
             /*
              TODO: There's something a little smelly about late-init values in that `null` does not explicitly mean
-              that the property is not required, only that it has not yet been initialised.
-              I'd question whether the event watcher should not be owned by a factory to solve this. The port's
-              event watcher can then be `final`
+              that the property is not required, only that it may not yet have been initialised.
+              -
+              I'm wondering whether the event watcher should not be owned by a factory to solve this. The port's
+              event watcher can then be `final` and the port can focus on its primary responsibility of handling IO
+              and avoid also being required to manage its own dependencies
+              -
+              As an aside, factories could render lazy initialisation such as `applyInitialState` redundant
              */
             if (this.eventWatcher == null) {
                 this.eventWatcher = new EventWatcher(

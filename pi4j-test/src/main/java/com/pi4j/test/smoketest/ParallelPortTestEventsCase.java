@@ -1,12 +1,17 @@
 package com.pi4j.test.smoketest;
 
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
+import com.pi4j.io.gpio.parallel.ParallelPort.PinStateChangedEvent;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Test case which outputs values `0..3` on BCM 20 and 21 and reads the value on BCM 7 and 12. The test fails
@@ -18,13 +23,12 @@ public class ParallelPortTestEventsCase {
 
     private static final Logger logger = LoggerFactory.getLogger(ParallelPortTestEventsCase.class);
 
-    private static final String TEST_NAME = "Parallel Port";
+    private static final String TEST_NAME = "Parallel Port Events";
 
     private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
-        .initialValue(2)
-        .shutdownValue(1)   // shutdown value should be exclusive of the initial value
+        .shutdownValue(0)   // shutdown value should be exclusive of the initial value
         .bcm(24)            // output port used by DigitalOutputTestCase
         .bcm(26)            // output port used by DigitalInputTestCase
         .build();
@@ -37,20 +41,67 @@ public class ParallelPortTestEventsCase {
         .build();
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Parallel Port test");
+        logger.info("Starting " + TEST_NAME + " test");
 
         try(var outputPort = providerContext.getContext().create(OUTPUT_CONFIG);
             var inputPort = providerContext.getContext().create(INPUT_CONFIG)) {
 
-            var eventCount = new AtomicInteger(0);
-            inputPort.addListener(event -> eventCount.incrementAndGet());
-            outputPort.write(1);
+            var nextExpectation = new AtomicReference<Function<ParallelPort.PinStateChangedNotification, TestResult>>();
+            var resultQueue = new ArrayBlockingQueue<TestResult>(1);
+
+            inputPort.addListener(event -> {
+                logger.info("Got event: {}", event);
+                resultQueue.add(nextExpectation.get().apply(event));
+            });
             outputPort.write(0);
 
-            if (eventCount.get() == 0) {
-                logger.error("No events were detected on the input port");
-                return new TestResult(TEST_NAME, false, "No events detected on input port");
-            }
+            // First event is fired
+            nextExpectation.set(event ->
+                Arrays.asList(event.events()).contains(new PinStateChangedEvent(0, DigitalState.HIGH))
+                    ? new TestResult(TEST_NAME, true, "Got first event")
+                    : new TestResult(TEST_NAME, false, "Failed to get first event")
+            );
+            outputPort.write(1);
+            var result = resultQueue.take();
+            if (!result.success()) return result;
+
+            // Second event is fired
+            nextExpectation.set(event -> {
+                if (event.events().length != 2) {
+                    return new TestResult(TEST_NAME, false, "Didn't get 2 events");
+                }
+
+                if (Arrays.stream(event.events()).noneMatch(new PinStateChangedEvent(0, DigitalState.LOW)::equals)) {
+                    return new TestResult(TEST_NAME, false, "No event for offset 0, state LOW");
+                }
+
+                if (Arrays.stream(event.events()).noneMatch(new PinStateChangedEvent(1, DigitalState.HIGH)::equals)) {
+                    return new TestResult(TEST_NAME, false, "No event for offset 1, state HIGH");
+                }
+
+                return new TestResult(TEST_NAME, true, "Got second event");
+            });
+            outputPort.write(2);
+            result = resultQueue.take();
+            if (!result.success()) return result;
+
+            // Third event is fired
+            nextExpectation.set(event -> {
+                if (event.events().length != 1) {
+                    return new TestResult(TEST_NAME, false, "Didn't get 1 event");
+                }
+
+                if (Arrays.stream(event.events()).noneMatch(new PinStateChangedEvent(0, DigitalState.HIGH)::equals)) {
+                    return new TestResult(TEST_NAME, false, "No event for offset 0, state HIGH");
+                }
+
+                return new TestResult(TEST_NAME, true, "Got third event");
+            });
+            outputPort.write(3);
+            result = resultQueue.take();
+            if (!result.success()) return result;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         return new TestResult(TEST_NAME, true, "Parallel port event operations completed");
