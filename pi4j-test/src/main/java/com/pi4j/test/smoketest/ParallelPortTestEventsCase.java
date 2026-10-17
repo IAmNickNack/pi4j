@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 /**
- * Test case which outputs values `0..3` on BCM 20 and 21 and reads the value on BCM 7 and 12. The test fails
- * if the value read does not match the value that was written.
+ * Test case which writes values 0..3 to a parallel port and expects events to be fired on a second, input parallel port.
+ * The test will fail if the expected events are not received.
  */
 public class ParallelPortTestEventsCase {
 
