@@ -109,8 +109,8 @@ public sealed class FFMParallelPort
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
             /*
              TODO: There's something a little smelly about late-init values in that `null` does not explicitly mean
-              that the property is not required, only that it has not yet been initialised. This then requires code
-              to call potentially unnecessary null checks and initialisation logic in multiple places.
+              that the property is not required, only that it has not yet been initialised. This then requires
+              potentially unnecessary calls invoking null checks and initialisation logic in multiple places.
               -
               I'd question whether the event watcher should not be owned by a factory to solve this. The port's
               event watcher can then be `final`.
