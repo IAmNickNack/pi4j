@@ -78,9 +78,6 @@ class FFMParallelPortTest {
                         return DynamicTest.dynamicTest(testName, () -> {
                             int mappedOffset = operation.getUserOffset(inputOffset);
                             assertEquals(expectedOffset, mappedOffset);
-
-//                            int unmappedOffset = operation.unmapOffset(mappedOffset);
-//                            assertEquals(inputOffset, unmappedOffset);
                         });
                     });
             });

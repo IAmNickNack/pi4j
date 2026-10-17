@@ -106,13 +106,12 @@ public sealed class FFMParallelPort
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
             /*
              TODO: There's something a little smelly about late-init values in that `null` does not explicitly mean
-              that the property is not required, only that it may not yet have been initialised.
+              that the property is not required, only that it has not yet been initialised.
+              I'd question whether the event watcher should not be owned by a factory to solve this. The port's
+              event watcher can then be `final`.
               -
-              I'm wondering whether the event watcher should not be owned by a factory to solve this. The port's
-              event watcher can then be `final` and the port can focus on its primary responsibility of handling IO
-              and avoid also being required to manage its own dependencies
-              -
-              As an aside, factories could render lazy initialisation such as `applyInitialState` redundant
+              This has to delayed until `openAndRequest` due to the file descriptor being required for the event watcher.
+              It is not possible to initialise the event watcher before this point.
              */
             if (this.eventWatcher == null) {
                 this.eventWatcher = new EventWatcher(
@@ -163,6 +162,12 @@ public sealed class FFMParallelPort
 
     @Override
     public ParallelPort addListener(PinStateChangeListener listener) {
+        /*
+         TODO: This should maybe throw `IllegalStateException` if the port is not configured as an input.
+          -
+          The null check here currently assumes that the event watcher is null for a reason, so no initialisation
+          is attempted, but we could check and initialise at this point if absolutely necessary.
+         */
         if (this.eventWatcher != null) {
             boolean startRequired = !events.hasListeners();
             super.addListener(listener);
@@ -175,6 +180,12 @@ public sealed class FFMParallelPort
 
     @Override
     public ParallelPort removeListener(PinStateChangeListener listener) {
+        /*
+         TODO: This should maybe throw `IllegalStateException` if the port is not configured as an input.
+          -
+          The null check here currently assumes that the event watcher is null for a reason, so no initialisation
+          is attempted, but we could check and initialise at this point if absolutely necessary.
+         */
         if (this.eventWatcher != null) {
             super.removeListener(listener);
             if (!events.hasListeners()) {
