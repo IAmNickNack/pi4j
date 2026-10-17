@@ -38,7 +38,7 @@ public sealed class FFMParallelPort
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
 
-    private final EventWatcher eventWatcher;
+    private EventWatcher eventWatcher;
     /**
      * Executor service for the event watcher thread. This is a single-threaded executor that ultimately polls
      * the hardware layer.
@@ -71,44 +71,61 @@ public sealed class FFMParallelPort
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
 
-        /*
-         TODO: It's unnecessary to run individual {@link EventWatcher} threads for each listener. This
-          generates more poll and read operations than necessary. Instead, we should have a single watcher thread
-          per port and dispatch events to all listeners from there.
-        */
-        this.watcherService = Executors.newSingleThreadExecutor(Thread.ofPlatform()
-            .name(config.id() + "-watcher", 0)
-            .daemon(true)
-            .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in watcher thread", e))
-            .factory()
-        );
-        /*
-         TODO: This might not be a responsibility of the {@link FFMParallelPort}.
-          This could be delegated to an appropriate {@link EventManager}
-         */
-        this.dispatcherService = Executors.newCachedThreadPool(Thread.ofPlatform()
-            .name(config.id() + "-dispatcher", 0)
-            .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in dispatcher thread", e))
-            .factory()
-        );
-
-        this.eventWatcher = new EventWatcher(
-            gpioLine.chipFileDescriptor,
-            gpioLine.mask,
-            config.debounce(),
-            gpioLine.file,
-            PinEvent.BOTH,
-            eventList -> {
-                var notification = eventsAsNotification(eventList);
-                dispatcherService.submit(() -> events.dispatch(notification));
-            }
-        );
+        // Events are only available if the initial direction is INPUT. No need to create these for OUTPUT ports
+        if (config.initialDirection() == Direction.INPUT) {
+            /*
+             TODO: It's unnecessary to run individual {@link EventWatcher} threads for each listener.
+              Not only does this generates more poll and read operations than necessary,
+              if there's more than one listener, one or the other poller is going to get first dibs on the
+              event buffer and multiple listeners will each see different events.
+            */
+            this.watcherService = Executors.newSingleThreadExecutor(Thread.ofPlatform()
+                .name(config.id() + "-watcher-", 0)
+                .daemon(true)
+                .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in watcher thread", e))
+                .factory()
+            );
+            /*
+             TODO: This might not be a responsibility of the {@link FFMParallelPort}.
+              This could be delegated to an appropriate {@link EventManager}
+             */
+            this.dispatcherService = Executors.newCachedThreadPool(Thread.ofPlatform()
+                .name(config.id() + "-dispatcher-", 0)
+                .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in dispatcher thread", e))
+                .factory()
+            );
+        } else {
+            this.watcherService = null;
+            this.dispatcherService = null;
+        }
     }
 
     @Override
     public ParallelPort applyInitialState() throws InitializeException {
         if (config.initialDirection() == Direction.INPUT) {
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
+            /*
+             TODO: There's something a little smelly about late-init values in that `null` does not explicitly mean
+              that the property is not required, only that it has not yet been initialised.
+              I'd question whether the event watcher should not be owned by a factory to solve this. The port's
+              event watcher can then be `final`
+             */
+            if (this.eventWatcher == null) {
+                this.eventWatcher = new EventWatcher(
+                    gpioLine.chipFileDescriptor,
+                    gpioLine.mask,
+                    0,
+                    gpioLine.file,
+                    PinEvent.BOTH,
+                    eventList -> {
+                        var notification = eventsAsNotification(eventList);
+                        if (!dispatcherService.isShutdown()) {
+                            dispatcherService.submit(() -> events.dispatch(notification));
+                        }
+                    }
+                );
+            }
+
         } else {
             gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
         }
@@ -131,21 +148,34 @@ public sealed class FFMParallelPort
         return direction;
     }
 
+    /**
+     * Map a gpio offset to its pin offset in this port
+     * @param gpio the gpio offset
+     * @return the pin offset
+     */
+    protected int mapGpioToPin(int gpio) {
+        return MaskUtils.packOffsetByMask(config.mask(), gpio);
+    }
+
     @Override
     public ParallelPort addListener(PinStateChangeListener listener) {
-        boolean startRequired = !events.hasListeners();
-        super.addListener(listener);
-        if (startRequired) {
-            watcherService.submit(eventWatcher);
+        if (this.eventWatcher != null) {
+            boolean startRequired = !events.hasListeners();
+            super.addListener(listener);
+            if (startRequired) {
+                watcherService.submit(eventWatcher);
+            }
         }
         return this;
     }
 
     @Override
     public ParallelPort removeListener(PinStateChangeListener listener) {
-        super.removeListener(listener);
-        if (!events.hasListeners()) {
-            eventWatcher.stopWatching();
+        if (this.eventWatcher != null) {
+            super.removeListener(listener);
+            if (!events.hasListeners()) {
+                eventWatcher.stopWatching();
+            }
         }
         return this;
     }
@@ -156,11 +186,15 @@ public sealed class FFMParallelPort
             return;
         }
         super.close();
-        if (events.hasListeners()) {
-            eventWatcher.stopWatching();
+        if (eventWatcher != null) {
+            if (events.hasListeners()) {
+                eventWatcher.stopWatching();
+            }
         }
-        watcherService.shutdown();
-        dispatcherService.shutdown();
+        if (watcherService != null) {
+            watcherService.shutdown();
+            dispatcherService.shutdown();
+        }
         if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
             write(config.shutdownValue());
         }
@@ -245,8 +279,8 @@ public sealed class FFMParallelPort
      * Convert a list of {@link DetectedEvent} to a {@link PinStateChangedNotification}
      * <p>
      * TODO: This does not currently detect missing events. This requires monitoring {@link LineEvent#lineSeqno()} for
-     *  each line and maybe raises a question as to whether we need {@link DetectedEvent} here and just consume
-     *  {@link LineEvent} directly.
+     *  each line and maybe raises a question as to whether we really need a {@link DetectedEvent} abstraction here
+     *  or just consume {@link LineEvent} directly.
      * <p>
      * TODO: Additionally, we then need to ask whether it is necessary to track {@link LineEvent#lineSeqno()} across
      *  {@link ParallelPort.PinStateChangedNotification}s to capture dropping of first and last events. This might
@@ -271,7 +305,7 @@ public sealed class FFMParallelPort
      */
     private ParallelPort.PinStateChangedEvent eventAsChangeEvent(DetectedEvent event) {
         // convert the hardware offset to the logical user-specified offset
-        int offset = (int) MaskUtils.packByMask(config.mask(), 1L << event.offset());
+        int offset = mapGpioToPin(event.offset());
         // represent the change type by its resulting digital state value
         var state = event.pinEvent() == PinEvent.RISING
             ? DigitalState.HIGH
@@ -315,6 +349,11 @@ public sealed class FFMParallelPort
         @Override
         protected int handleRead() {
             return mappingLogic.unmap(super.handleRead());
+        }
+
+        @Override
+        protected int mapGpioToPin(int offset) {
+            return mappingLogic.mapOffset(super.mapGpioToPin(offset));
         }
     }
 
@@ -392,6 +431,19 @@ public sealed class FFMParallelPort
                 result |= ((value >> offsets[i]) & 1) << i;
             }
             return result;
+        }
+
+        /**
+         * Find the user-specified offset for an in-sequence offset
+         * @param offset the in-sequence offset as maybe packed from a {@link LineEvent#offset()}
+         * @return the logical offset according to the user-specified sequence
+         */
+        public int mapOffset(int offset) {
+            if (offset < offsets.length) {
+                return offsets[offset];
+            } else {
+                return -1;
+            }
         }
     }
 }

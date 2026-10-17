@@ -45,7 +45,7 @@ class MaskUtilsTest {
             new Expectation(0b101, 0b100, 0b010),
             new Expectation(0b101, 0b101, 0b011)
         }) {
-            assertEquals(expectation.expected, MaskUtils.packByMask(expectation.mask, expectation.value));
+            assertEquals(expectation.expected, MaskUtils.packValueByMask(expectation.mask, expectation.value));
         }
     }
 }

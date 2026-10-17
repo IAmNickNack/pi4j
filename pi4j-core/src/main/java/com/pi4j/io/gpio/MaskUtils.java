@@ -70,7 +70,7 @@ public class MaskUtils {
      * @param value a value that complies with the mask
      * @return a packed, logical value
      */
-    public static long packByMask(long mask, long value) {
+    public static long packValueByMask(long mask, long value) {
         long out = 0;
         int i = 0;          // absolute bit position in value
         int k = 0;          // next bit position in packed output
@@ -87,6 +87,29 @@ public class MaskUtils {
         return out;
     }
 
+    /**
+     * Convert a hardware offset to the offset in the packed equivalent of the mask
+     * @param mask the unpacked hardware mask
+     * @param offset the offset in the hardware mask
+     * @return the offset in the packed mask
+     */
+    public static int packOffsetByMask(long mask, int offset) {
+        int i = 0;          // absolute bit position in value
+        int k = 0;          // next bit position in packed output
+        long m = mask;
+        while (m != 0) {
+            int tz = Long.numberOfTrailingZeros(m); // skip mask zero bits
+            i += tz;
+            m >>>= tz;
+            if (i == offset) {
+                return k;
+            }
+            m >>>= 1;       // consumed this mask bit
+            i++;            // move to next absolute bit position
+            k++;            // advance packed output position
+        }
+        throw new IllegalArgumentException("Offset " + offset + " is not set in mask " + Long.toBinaryString(mask));
+    }
 
     /**
      * Iterator over the offsets of a mask
