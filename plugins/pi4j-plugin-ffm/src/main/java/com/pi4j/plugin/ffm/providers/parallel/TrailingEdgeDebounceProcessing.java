@@ -1,9 +1,9 @@
 package com.pi4j.plugin.ffm.providers.parallel;
 
-import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
+import com.pi4j.util.MaskUtils;
 
 import java.util.ArrayList;
 import java.util.List;
