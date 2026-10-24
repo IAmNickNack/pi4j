@@ -59,7 +59,7 @@ public class TrailingEdgeDebounceProcessing implements PinEventProcessing {
         for (LineEvent event : events) {
             int offset = MaskUtils.packOffsetByMask(mask, event.offset());
             if (offset < 0 || offset >= pendingEvent.length) {
-                continue; // Ignore events outside the mask
+                continue; // Ignore events outside the mask. This should never happen
             }
 
             if (pendingEvent[offset] != null && event.timestampNs() - pendingEvent[offset].timestampNs() >= debounceNs) {
