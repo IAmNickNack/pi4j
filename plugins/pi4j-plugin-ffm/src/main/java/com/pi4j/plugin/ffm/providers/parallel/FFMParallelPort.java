@@ -54,33 +54,35 @@ public sealed class FFMParallelPort
      * @param onClose an optional close handler
      */
     public static FFMParallelPort create(ParallelPortConfig config, Consumer<? super ParallelPort> onClose) {
-        var inputLineConfig = createInputLineConfigs(config);
-        var outputLineConfig = createOutputLineConfigs(config);
         var gpioLine = FFMGpioLine.openAndRequest(
             MaskUtils.mask(config.offsets()),
             config.bus(),
-            config.initialDirection() == Direction.INPUT ? inputLineConfig : outputLineConfig,
+            config.initialDirection() == Direction.INPUT ? createInputLineConfigs(config) : createOutputLineConfigs(config),
             config.id()
         );
         FFMPermissionHelper.checkDevicePermissions(gpioLine.deviceName, config);
 
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
-            ? new FFMParallelPort.WithBitmaskMappingLogic(gpioLine, inputLineConfig, outputLineConfig, config, mappingLogic, onClose)
-            : new FFMParallelPort(gpioLine, inputLineConfig, outputLineConfig, config, onClose);
+            ? new FFMParallelPort.WithBitmaskMappingLogic(gpioLine, config, mappingLogic, onClose)
+            : new FFMParallelPort(gpioLine, config, onClose);
     }
 
+    /**
+     *
+     * @param gpioLine pre-configured and validated {@link FFMGpioLine}
+     * @param config user defined configuration
+     * @param onClose callback to be invoked on {@link #close()}
+     */
     private FFMParallelPort(
         FFMGpioLine gpioLine,
-        LineConfig inputLineConfig,
-        LineConfig outputLineConfig,
         ParallelPortConfig config,
         Consumer<? super ParallelPort> onClose
     ) {
         super(config, onClose);
         this.gpioLine = gpioLine;
-        this.inputLineConfig = inputLineConfig;
-        this.outputLineConfig = outputLineConfig;
+        this.inputLineConfig = createInputLineConfigs(config);
+        this.outputLineConfig = createOutputLineConfigs(config);
 
         // Events are only available if the initial direction is INPUT. No need to create these for OUTPUT ports
         if (config.initialDirection() == Direction.INPUT) {
@@ -285,13 +287,11 @@ public sealed class FFMParallelPort
          */
         WithBitmaskMappingLogic(
             FFMGpioLine gpioLine,
-            LineConfig inputLineConfig,
-            LineConfig outputLineConfig,
             ParallelPortConfig config,
             BitmaskMappingLogic mappingLogic,
             Consumer<? super ParallelPort> onClose
         ) {
-            super(gpioLine, inputLineConfig, outputLineConfig, config, onClose);
+            super(gpioLine, config, onClose);
             this.mappingLogic = mappingLogic;
         }
 
