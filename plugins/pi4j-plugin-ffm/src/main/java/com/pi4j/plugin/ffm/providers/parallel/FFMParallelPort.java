@@ -33,9 +33,9 @@ public sealed class FFMParallelPort
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
-    private FFMGpioLine gpioLine;
+    private final FFMGpioLine gpioLine;
 
-    private EventWatcher eventWatcher;
+    private final EventWatcher eventWatcher;
     /**
      * Executor service for the event watcher thread.
      * @see <a href="https://github.com/Pi4J/pi4j/issues/804">Pi4J issue 804</a>
@@ -54,14 +54,33 @@ public sealed class FFMParallelPort
      * @param onClose an optional close handler
      */
     public static FFMParallelPort create(ParallelPortConfig config, Consumer<? super ParallelPort> onClose) {
+        var gpioLine = FFMGpioLine.openAndRequest(
+            MaskUtils.mask(config.offsets()),
+            config.bus(),
+            config.initialDirection() == Direction.INPUT ? createInputLineConfigs(config) : createOutputLineConfigs(config),
+            config.id()
+        );
+        FFMPermissionHelper.checkDevicePermissions(gpioLine.deviceName, config);
+
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
-            ? new FFMParallelPort.WithBitmaskMappingLogic(config, mappingLogic, onClose)
-            : new FFMParallelPort(config, onClose);
+            ? new FFMParallelPort.WithBitmaskMappingLogic(gpioLine, config, mappingLogic, onClose)
+            : new FFMParallelPort(gpioLine, config, onClose);
     }
 
-    private FFMParallelPort(ParallelPortConfig config, Consumer<? super ParallelPort> onClose) {
+    /**
+     *
+     * @param gpioLine pre-configured and validated {@link FFMGpioLine}
+     * @param config user defined configuration
+     * @param onClose callback to be invoked on {@link #close()}
+     */
+    private FFMParallelPort(
+        FFMGpioLine gpioLine,
+        ParallelPortConfig config,
+        Consumer<? super ParallelPort> onClose
+    ) {
         super(config, onClose);
+        this.gpioLine = gpioLine;
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
 
@@ -78,35 +97,21 @@ public sealed class FFMParallelPort
                 .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in dispatcher thread", e))
                 .factory()
             );
+            this.eventWatcher = new EventWatcher(
+                gpioLine.chipFileDescriptor,
+                gpioLine.mask,
+                PinEvent.BOTH,
+                new PinStateChangedNotificationProcessing(
+                    this,
+                    notification -> dispatcherService.submit(() -> events.dispatch(notification)),
+                    this::mapGpioToPin
+                )
+            );
         } else {
             this.watcherService = null;
             this.dispatcherService = null;
+            this.eventWatcher = null;
         }
-    }
-
-    @Override
-    public void applyInitialState() throws InitializeException {
-        if (config.initialDirection() == Direction.INPUT) {
-            gpioLine = FFMGpioLine.openAndRequest(MaskUtils.mask(config.offsets()), config.bus(), inputLineConfig, config.id());
-            if (this.eventWatcher == null) {
-                this.eventWatcher = new EventWatcher(
-                    gpioLine.chipFileDescriptor,
-                    gpioLine.mask,
-                    PinEvent.BOTH,
-                    /* TODO: No software debounce for now and leaving this to hardware debounce if configured. */
-                    new PinStateChangedNotificationProcessing(
-                        this,
-                        notification -> dispatcherService.submit(() -> events.dispatch(notification)),
-                        this::mapGpioToPin
-                    )
-                );
-            }
-
-        } else {
-            gpioLine = FFMGpioLine.openAndRequest(MaskUtils.mask(config.offsets()), config.bus(), outputLineConfig, config.id());
-        }
-        FFMPermissionHelper.checkDevicePermissions(gpioLine.deviceName, config);
-        super.applyInitialState();
     }
 
     @Override
@@ -281,9 +286,12 @@ public sealed class FFMParallelPort
          * @param onClose      an optional close handler
          */
         WithBitmaskMappingLogic(
-            ParallelPortConfig config, BitmaskMappingLogic mappingLogic, Consumer<? super ParallelPort> onClose
+            FFMGpioLine gpioLine,
+            ParallelPortConfig config,
+            BitmaskMappingLogic mappingLogic,
+            Consumer<? super ParallelPort> onClose
         ) {
-            super(config, onClose);
+            super(gpioLine, config, onClose);
             this.mappingLogic = mappingLogic;
         }
 
